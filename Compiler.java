@@ -9,5 +9,7 @@ public class Compiler {
 		String fileName = "text.txt";
 		Scanner read = new Scanner(fileName);
 		// LMFAO, FCKEN PEICE OF SHIEEET!!! HAHAHAHHA!!!
+		
+		// FUCK YOU! KENTAMS MALIIT ETITS MO!
 	}
 }
