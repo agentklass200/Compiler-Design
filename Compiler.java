@@ -7,11 +7,6 @@ import LexicalAnalyzer.Scanner;
 public class Compiler {
 	public static void main(String[] args) throws IOException {
 		String fileName = "text.txt";
-		Scanner read = new Scanner(fileName);
-		// LMFAO, FCKEN PEICE OF SHIEEET!!! HAHAHAHHA!!!
-		
-		// FUCK YOU! KENTAMS MALIIT ETITS MO!
-                
-                // FAK U KLASIMONOUS WAG KA NA MAG AAWP BObo
+		Scanner read = new Scanner(fileName);		
 	}
 }
