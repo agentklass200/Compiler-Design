@@ -11,5 +11,7 @@ public class Compiler {
 		// LMFAO, FCKEN PEICE OF SHIEEET!!! HAHAHAHHA!!!
 		
 		// FUCK YOU! KENTAMS MALIIT ETITS MO!
+                
+                // FAK U KLASIMONOUS WAG KA NA MAG AAWP BObo
 	}
 }
