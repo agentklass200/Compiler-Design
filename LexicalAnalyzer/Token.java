@@ -1,13 +1,17 @@
 package LexicalAnalyzer;
 
 public class Token {
-	private String name;
-	private String value;
-	private String lexeme;
+	protected String name;
+	protected String value;
+	protected String lexeme;
 	
 	public Token(String name, String value){
 		this.name = name;
 		this.value = value;
+	}
+	
+	public Token(String name){
+		this.name = name;
 	}
 
 	public String getName() {
