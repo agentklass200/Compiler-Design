@@ -69,8 +69,10 @@ public class SymbolTable {
         table.put("If", new Token("If", "IF", "Conditional Statements"));        
         table.put("ElseIf", new Token("ElseIf", "ELSEIF", "Conditional Statements"));
         table.put("Else", new Token("Else", "ELSE", "Conditional Statements"));
-        table.put("EndIf", new Token("EndIf", "ENDIF", "Conditional Statements"));                                                
-       
+        table.put("EndIf", new Token("EndIf", "ENDIF", "Conditional Statements"));   
+        
+        table.put("WhileLoop", new Token("WhileLoop", "WHILE", "Loop"));   
+        table.put("ForLoop", new Token("FoorLoop", "LAPSE", "Loop"));   
     }
         
 }
