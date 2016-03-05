@@ -15,13 +15,10 @@ import java.util.HashMap;
 public class SymbolTable {
     //HI
    
-    public HashMap<String, Token> letter = new HashMap<String, Token>();
-    
-    public SymbolTable() {
-        letter.put("Add",new Token("Add","+","Arithmetic Operator"));   
-        
+    public HashMap<String, Token> table = new HashMap<String, Token>();
+
+    public SymbolTable(){
+       table.put("Add",new Token("Add","+","Arithmetic Operator"));   
     }
-    
-    
-    
+        
 }
