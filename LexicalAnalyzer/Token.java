@@ -4,10 +4,12 @@ public class Token {
 	protected String name;
 	protected String value;
 	protected String lexeme;
+	protected String type;
 	
-	public Token(String name, String value){
+	public Token(String name, String value, String type){
 		this.name = name;
 		this.value = value;
+        this.type = type;
 	}
 	
 	public Token(String name){
@@ -30,6 +32,14 @@ public class Token {
 		this.value = value;
 	}
 
+        public String getType() {
+		return value;
+	}
+
+	public void setType(String type) {
+		this.value = value;
+	}
+        
 	public String getLexeme() {
 		return lexeme;
 	}
