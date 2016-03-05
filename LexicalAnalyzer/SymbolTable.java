@@ -72,7 +72,7 @@ public class SymbolTable {
         table.put("EndIf", new Token("EndIf", "ENDIF", "Conditional Statements"));   
         
         table.put("WhileLoop", new Token("WhileLoop", "WHILE", "Loop"));   
-        table.put("ForLoop", new Token("FoorLoop", "LAPSE", "Loop"));   
+        table.put("ForLoop", new Token("ForLoop", "LAPSE", "Loop"));   
     }
         
 }
