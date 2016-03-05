@@ -10,7 +10,7 @@ public class LexiScan {
 		
 		InputStream file = null;
 		BufferedReader bReader = null;
-		
+	
 		try{
 			file = new FileInputStream(fileName);
 			bReader = new BufferedReader(new InputStreamReader(file));
