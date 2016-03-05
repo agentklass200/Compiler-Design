@@ -1,12 +1,12 @@
 import java.io.IOException;
 
-import LexicalAnalyzer.Scanner;
+import LexicalAnalyzer.LexiScan;
 
 
 // Main Class
 public class Compiler {
 	public static void main(String[] args) throws IOException {
 		String fileName = "text.txt";
-		Scanner read = new Scanner(fileName);		
+		LexiScan read = new LexiScan(fileName);		
 	}
 }

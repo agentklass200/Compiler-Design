@@ -2,11 +2,11 @@ package LexicalAnalyzer;
 
 import java.io.*;
 
-public class Scanner {
+public class LexiScan {
 	int posNo, lineNo;
 	char current;
 	
-	public Scanner(String fileName) throws IOException{
+	public LexiScan(String fileName) throws IOException{
 		
 		InputStream file = null;
 		BufferedReader bReader = null;
