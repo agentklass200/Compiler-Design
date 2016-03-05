@@ -6,7 +6,7 @@ import LexicalAnalyzer.LexiScan;
 // Main Class
 public class Compiler {
 	public static void main(String[] args) throws IOException {
-		String fileName = "text.txt";
+		String fileName = "Input.txt";
 		LexiScan read = new LexiScan(fileName);		
 	}
 }
