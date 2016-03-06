@@ -1,24 +1,50 @@
-*:This is a sample comment:*
+*: FAJAMAA LANGUAGE  :*
 
 INITIATE
 >>
-INT x, i;
-FLOAT j;
+*: INITIALIZATION STAGE :*
+INT _x, _i=1;
+STR _samplestr = "Hello World";
+CHAR _c = 'z';
+BOOL _b = TRUE;
+FLOAT _j = 2.05;
 
-IF: x ~= 20 || i == 2
+*: PRINTF STAGE :*
+REVEAL: "Hello \n World";
+REVEAL: "\t" +  _samplestr;
+REVEAL: " \nInput value of x: ";
+*: SCANF STAGE :*
+OBTAIN: _x;
+
+*: SAMPLE IF STATEMENT :*
+IF: _x ~= 20 || _i == 2
 >>
-(x+5)/2;
-(i-24)*5;
+(_x+5)/2;
+(_i-24)*5;
 <<
+
+*: SAMPLE ELSE STATEMENT :*
 ELSE
 >>
-x=5;
+_x=5;
 <<
+ENDIF
 
-LAPSE: i=7 & i<=20 & i++
+
+*: SAMPLE FOR LOOP :*
+LAPSE: _i=7 & _i<=20 & _i++
 >>
-x--;
+_x--;
 <<
 
+REVEAL: "The value of x now is: " + _x;
+REVEAL: "The value of i now is: " + _i;
+_j TRANSFORMTO STR;
+REVEAL: _j;
+
+*:SAMPLE WHILE LOOP:*
+WHILE: _b = 0 & _b <=10 & _b++
+>>
+	REVEAL: "This is a Sample While Loop";
 <<
 TERMINATE

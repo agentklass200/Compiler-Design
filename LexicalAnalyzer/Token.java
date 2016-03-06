@@ -11,7 +11,7 @@ public class Token {
         this.type = type;
 	}
 	
-	public Token(String name){
+	protected Token(String name){
 		this.name = name;
 	}
 
@@ -41,7 +41,7 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return "Token [name=" + name + ", value=" + value + ", type=" + type + "] \n";
+		return "["+name+"]";
 	}
         
 	

@@ -6,10 +6,7 @@ import LexicalAnalyzer.LexiScan;
 // Main Class
 public class Compiler {
 	public static void main(String[] args) throws IOException {
-		String fileName = "src/id-test.txt";
+		String fileName = "src/sample.txt";
 		LexiScan read = new LexiScan(fileName);		
 	}
 }
-
-
-//SUPOT SI CAMS

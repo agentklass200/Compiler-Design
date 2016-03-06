@@ -22,9 +22,14 @@ public class TokenID extends Token {
 		this.key = key;
 	}
 
+	
+	public String formalString(){
+		return "ID[key = " + key + " Details = [ Lexeme = " + key + ", Type = ID] ]\n";
+	}
+	
 	@Override
 	public String toString() {
-		return "TokenID [key=" + key + " details=[lexeme="+ key +" type=id]]\n";
+		return key;
 	}
 
 }
