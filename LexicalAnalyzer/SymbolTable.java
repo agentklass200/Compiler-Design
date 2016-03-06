@@ -5,7 +5,6 @@ import LexicalAnalyzer.Token;
 import java.util.HashMap;
 
 public class SymbolTable {
-    //HI
    
     private HashMap<String, Token> table = new HashMap<String, Token>();
 

@@ -23,6 +23,12 @@ IF: _x ~= 20 || _i == 2
 (_i-24)*5;
 <<
 
+*: SAMPLE ELSE IF STATEMENT :*
+ELSEIF: _x%2 = 1
+>>
+	REVEAL: "The remainder is _x";
+<<
+
 *: SAMPLE ELSE STATEMENT :*
 ELSE
 >>
