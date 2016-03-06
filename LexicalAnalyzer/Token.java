@@ -3,7 +3,6 @@ package LexicalAnalyzer;
 public class Token {
 	protected String name;
 	protected String value;
-	protected String lexeme;
 	protected String type;
 	
 	public Token(String name, String value, String type){
@@ -39,15 +38,12 @@ public class Token {
 	public void setType(String type) {
 		this.value = value;
 	}
-        
-	public String getLexeme() {
-		return lexeme;
-	}
 
-	public void setLexeme(String lexeme) {
-		this.lexeme = lexeme;
+	@Override
+	public String toString() {
+		return "Token [name=" + name + ", value=" + value + ", type=" + type + "] \n";
 	}
-	
+        
 	
 	
 	
