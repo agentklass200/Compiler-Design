@@ -2,7 +2,9 @@ package LexicalAnalyzer;
 
 import java.io.*;
 import java.util.*;
-import LexicalAnalyzer.*;
+import LexicalAnalyzer.TokenID;
+import LexicalAnalyzer.TokenConstant;
+
 import Parsing.*;
 
 public class LexiScan {
