@@ -99,21 +99,18 @@ public class LexiScan {
 					case ':':  /* *: Hello :hello :* */
 						lookahead++;
 						while(((char)stream.get(lookahead).intValue() != ':' || (char)stream.get(lookahead + 1).intValue() != '*') && isError == false){
-                                                        if((char)stream.get(lookahead).intValue() == '\r'){
-                                                            lineNo++;
-                                                        }
-                                                        
-                                                        if(stream.get(lookahead).intValue() == -1){
-                                                            isError = true;
-                                                            System.out.println();
-                                                            System.out.println("Error: Comment not closed with \":*\".");
-                                                            System.out.println("Error in Line Number: " + lineNo);
-                                                            lookahead = lookahead - 3;
-                                                        }
-                                                        
-							lookahead++;
-                                                        
-                                                        
+							 if((char)stream.get(lookahead).intValue() == '\r'){
+                                 lineNo++;
+                             }
+                             
+                             if(stream.get(lookahead).intValue() == -1){
+                                 isError = true;
+                                 System.out.println();
+                                 System.out.println("Error: Comment not closed with \":*\".");
+                                 System.out.println("Error in Line Number: " + lineNo);
+                                 lookahead = lookahead - 3;
+                             }                          
+							lookahead++;                                  
 						}
 						lookahead =  lookahead + 2;
 						break;
@@ -315,17 +312,17 @@ public class LexiScan {
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				while((char)stream.get(lookahead).intValue() != '"' && isError ==  false){
-                                        if((char)stream.get(lookahead).intValue() == '\r' ){
-                                                            lineNo++;
-                                        }
+					if((char)stream.get(lookahead).intValue() == '\r' ){
+                      lineNo++;
+                    }
 					tokenBuilder.add((char)stream.get(lookahead).intValue());
-                                        if(stream.get(lookahead).intValue() == -1 ){
-                                                            isError = true;
-                                                            System.out.println();
-                                                            System.out.println("Error: String Constant not closed with '\"'.");
-                                                            System.out.println("Error in Line Number: " + lineNo);
-                                                            lookahead = lookahead - 3;
-                                        }
+					if(stream.get(lookahead).intValue() == -1 ){
+                        isError = true;
+                        System.out.println();
+                        System.out.println("Error: String Constant not closed with '\"'.");
+                        System.out.println("Error in Line Number: " + lineNo);
+                        lookahead = lookahead - 3;
+                    }                    
 					lookahead++;
 				}
 				tokenBuilder.add((char)stream.get(lookahead).intValue());
