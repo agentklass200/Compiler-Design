@@ -36,10 +36,8 @@ public class SymbolTable {
         table.put(":",new Token("Colon",":","Special Character"));
         table.put(",",new Token("Comma",",","Special Character"));
         table.put(";",new Token("Delimiter",";","Special Character"));
-        table.put("(",new Token("OpenParen","(","Special Character"));
+        table.put("(",new Token("OpenParen","(","Special Character"));//
         table.put(")",new Token("CloseParen",")","Special Character"));
-        table.put("{",new Token("OpenCurl","{","Special Character"));
-        table.put("}",new Token("CloseCurl","}","Special Character"));
         table.put(">>",new Token("Start",">>","Special Character"));
         table.put("<<",new Token("End","<<","Special Character"));
         table.put("\"",new Token("DouQuot","\"","Special Character"));

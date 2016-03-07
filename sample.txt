@@ -1,56 +1,76 @@
 *: FAJAMAA LANGUAGE  :*
 
+*:
+	This is a sample program
+	for FAJAMAA LANGUAGE
+	==========================
+	Andre Ayaquil
+	Christion Antioquia
+	Alecxis Banag
+	Mariano Camarillo
+	Megan Chan
+	Jim Paul Lucido
+	Angelo Magsino
+	==========================
+:*
+
 INITIATE
 >>
-*: INITIALIZATION STAGE :*
-INT _x, _i=1;
-STR _samplestr = "Hello World";
-CHAR _c = 'a';
-BOOL _b = TRUE;
-FLOAT _j = 2.057;
+	*: INITIALIZATION STAGE :*
+	INT _x, _i=1;
+	STR _samplestr = "Hello World";
+	CHAR _c = 'a';
+	BOOL _b = TRUE;
+	FLOAT _j = 2.057;
 
-*: PRINTF STAGE :*
-REVEAL: "Hello \n World";
-REVEAL: "\t" +  _samplestr;
-REVEAL: " \nInput value of x: ";
-*: SCANF STAGE :*
-OBTAIN: _x;
+	*: PRINTF STAGE :*
+	REVEAL: "Hello \n World";
+	REVEAL: "\t" +  _samplestr;
+	REVEAL: " \nInput value of x: ";
+	*: SCANF STAGE :*
+	OBTAIN: _x;
 
-*: SAMPLE IF STATEMENT :*
-IF: _x ~= 20 || _i == 2
->>
-(_x-5)/-2;
-(_i+24)*5;
-<<
+	*: SAMPLE IF STATEMENT :*
+	IF: _x ~= 20 || _i == 2 && ~_b
+	>>
+		_j = (_x-5)/-2;
+		_x = (_i+24)*5;
+	<<
 
-*: SAMPLE ELSE IF STATEMENT :*
-ELSEIF: _x%2 = 1
->>
-	REVEAL: "The remainder is _x";
-<<
+	*: SAMPLE ELSE IF STATEMENT :*
+	ELSEIF: _x%2 == 1
+	>>
+		REVEAL: "The remainder is _x";
+	<<
 
-*: SAMPLE ELSE STATEMENT :*
-ELSE
->>
-_x=5;
-<<
-ENDIF
+	*: SAMPLE ELSE STATEMENT :*
+	ELSE
+	>>
+		_x=5;
+		_b = FALSE;
+	<<
+	ENDIF
 
 
-*: SAMPLE FOR LOOP :*
-LAPSE: _i=7 & _i<=20 & _i++
->>
-_x--;
-<<
+	*: SAMPLE FOR LOOP :*
+	LAPSE: _i=7 & _i<=20 & _i++
+	>>
+		_x--;
+	<<
 
-REVEALS: "The value of x now is: " + _x;
-REVEAL: "The value of i now is: " + _i;
-_j TRANSFORMTO STR;
-REVEAL: _j;
+	REVEAL: "The value of x now is: " + _x;
+	REVEAL: "The value of i now is: " + _i;
+	_j TRANSFORMTO STR;
+	REVEAL: _j;
 
-*:SAMPLE WHILE LOOP:*
-WHILE: _b = 0 & _b <=10 & _b++
->>
-	REVEAL: "This is a Sample While Loop";
+	*:SAMPLE WHILE LOOP:*
+	WHILE: _i <= 10 
+	>>
+		IF: _x > 2 && _i < 3
+		>>
+			REVEAL: "This is a Sample While Loop";
+		<<
+		_i++;
+	<<
 <<
 TERMINATE
