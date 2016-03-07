@@ -14,6 +14,11 @@ public class Token {
 	protected Token(String name){
 		this.name = name;
 	}
+	
+	protected Token(String name, String type){
+		this.name = name;
+		this.type = type;
+	}
 
 	public String getName() {
 		return name;

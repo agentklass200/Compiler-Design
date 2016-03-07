@@ -5,6 +5,7 @@ import java.util.*;
 import LexicalAnalyzer.TokenID;
 import LexicalAnalyzer.TokenConstant;
 
+
 import Parsing.*;
 
 public class LexiScan {
@@ -62,7 +63,7 @@ public class LexiScan {
 					tokenBuilder.add((char)stream.get(lookahead).intValue());
 					lookahead++;
 					while(Character.isLetter((char)stream.get(lookahead).intValue()) || Character.isDigit((char)stream.get(lookahead).intValue())){
-                                                tokenBuilder.add((char)stream.get(lookahead).intValue());
+                        tokenBuilder.add((char)stream.get(lookahead).intValue());
 						lookahead++;
 					}
 					
@@ -102,15 +103,14 @@ public class LexiScan {
 							 if((char)stream.get(lookahead).intValue() == '\r'){
                                  lineNo++;
                              }
-                             
                              if(stream.get(lookahead).intValue() == -1){
                                  isError = true;
                                  System.out.println();
                                  System.out.println("Error: Comment not closed with \":*\".");
                                  System.out.println("Error in Line Number: " + lineNo);
                                  lookahead = lookahead - 3;
-                             }                          
-							lookahead++;                                  
+                             }
+                             lookahead++;                                  
 						}
 						lookahead =  lookahead + 2;
 						break;
