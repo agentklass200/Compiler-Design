@@ -23,7 +23,7 @@ public class Parser {
 		
 		if(scanner.isError() == false){
 			tokens.remove(0);
-			System.out.println("Sample Program");
+			System.out.println("Sample Program: Source Code");
 			System.out.println("========================");
 			for(int i = 0; i < scanner.stream.size() -1; i++){
 				System.out.print((char)scanner.stream.get(i).intValue());

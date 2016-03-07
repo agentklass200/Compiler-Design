@@ -24,11 +24,9 @@ public class LexiScan {
 			while((val = bReader.read()) != -1){
 				stream.add(val);
 			}
-			
 			stream.add(-1);
 			
 			tracker = 0;
-			
 			
 		}catch(Exception e){
 			e.printStackTrace();
