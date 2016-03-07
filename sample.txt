@@ -20,7 +20,7 @@ OBTAIN: _x;
 IF: _x ~= 20 || _i == 2
 >>
 (_x-5)/-2;
-(_i-24)*5;
+(_i+24)*5;
 <<
 
 *: SAMPLE ELSE IF STATEMENT :*
@@ -43,7 +43,7 @@ LAPSE: _i=7 & _i<=20 & _i++
 _x--;
 <<
 
-REVEAL: "The value of x now is: " + _x;
+REVEALS: "The value of x now is: " + _x;
 REVEAL: "The value of i now is: " + _i;
 _j TRANSFORMTO STR;
 REVEAL: _j;

@@ -3,14 +3,12 @@ package LexicalAnalyzer;
 import java.io.*;
 import java.util.*;
 import LexicalAnalyzer.*;
+import Parsing.*;
 
 public class LexiScan {
-	int lineNo, tracker, lookahead;
-	char current;
-	ArrayList<Integer> stream = new ArrayList<Integer>();
-	ArrayList<Token> tokens = new ArrayList<Token>();
-	ArrayList<TokenID> idList = new ArrayList<TokenID>();
-	ArrayList<Character> tokenBuilder = new ArrayList<Character>();
+	private int lineNo, tracker, lookahead;
+	public ArrayList<Integer> stream = new ArrayList<Integer>();
+	public ArrayList<Character> tokenBuilder = new ArrayList<Character>();
 	boolean isError = false;
 	SymbolTable symbol = new SymbolTable();
 	
@@ -23,8 +21,6 @@ public class LexiScan {
 			bReader = new BufferedReader(new InputStreamReader(file));
 			int val = 0;
 			lineNo = 1;
-		
-			
 			while((val = bReader.read()) != -1){
 				stream.add(val);
 			}
@@ -33,40 +29,7 @@ public class LexiScan {
 			
 			tracker = 0;
 			
-			tokens.add(new Token("filler", "", "filler"));
 			
-			
-			while(stream.get(tracker) != -1 && isError == false){
-				getToken();
-				tracker = lookahead;
-				tokenBuilder.clear();
-			}
-			
-			if(isError == false){
-				tokens.remove(0);
-				System.out.println("Sample Program");
-				System.out.println("========================");
-				for(int i = 0; i < stream.size() -1; i++){
-					System.out.print((char)stream.get(i).intValue());
-				}
-				System.out.println();
-				System.out.println();
-				System.out.println("List of Identifiers");
-				System.out.println("========================");
-				for(int i = 0; i < idList.size(); i++){
-					System.out.print(idList.get(i).formalString());
-					
-				}
-				System.out.println();
-				System.out.println("List of Tokens");
-				System.out.println("========================");
-				for(int i = 0; i < tokens.size(); i++){
-					System.out.print(tokens.get(i));
-					if(i%9 == 0 && i != 0){
-						System.out.println();
-					}
-				}
-			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
@@ -76,7 +39,7 @@ public class LexiScan {
 			
 	}
 	
-	public void getToken(){
+	public void getToken(Parser parse){
 		String newToken, newConstant;
 		switch((char)stream.get(tracker).intValue()){
 			case ' ':
@@ -105,13 +68,14 @@ public class LexiScan {
 					
 					String newID = buildToken(tokenBuilder);
 					
-					tokens.add(new TokenID(newID));
-					if(idList.isEmpty()){
-						idList.add(new TokenID(newID));
+					parse.getTokens().add(new TokenID(newID));
+					
+					if(parse.getIdList().isEmpty()){
+						parse.getIdList().add(new TokenID(newID));
 					}
 					else{
-						if(!checkID(newID)){
-							idList.add(new TokenID(newID));
+						if(!checkID(newID, parse)){
+							parse.getIdList().add(new TokenID(newID));
 						}
 					}		
 				}
@@ -141,7 +105,7 @@ public class LexiScan {
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				break;
 			case '+':
@@ -151,16 +115,16 @@ public class LexiScan {
 					case '+':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						if(tokens.get(tokens.size() - 1).getName() == "StringConstant"){
-							tokens.add(symbol.getTable().get(newToken + 2));
+						if(parse.getTokens().get(parse.getTokens().size() - 1).getName() == "StringConstant"){
+							parse.getTokens().add(symbol.getTable().get(newToken + 2));
 						}
 						else{
-							tokens.add(symbol.getTable().get(newToken + 1));
+							parse.getTokens().add(symbol.getTable().get(newToken + 1));
 						}
 						
 				}
@@ -172,16 +136,18 @@ public class LexiScan {
 					case '-':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						if(tokens.get(tokens.size() - 1).getName() == "IntegerConstant" || tokens.get(tokens.size() - 1).getName() == "FloatingConstant" || tokens.get(tokens.size() - 1).getName() == "Identifier"){
-							tokens.add(symbol.getTable().get(newToken + "sub"));
+						if(parse.getTokens().get(parse.getTokens().size() - 1).getName() == "IntegerConstant" || 
+								parse.getTokens().get(parse.getTokens().size() - 1).getName() == "FloatingConstant" || 
+								parse.getTokens().get(parse.getTokens().size() - 1).getName() == "Identifier"){
+							parse.getTokens().add(symbol.getTable().get(newToken + "sub"));
 						}
 						else{
-							tokens.add(symbol.getTable().get(newToken + "neg"));
+							parse.getTokens().add(symbol.getTable().get(newToken + "neg"));
 						}
 				}
 				break;
@@ -189,13 +155,13 @@ public class LexiScan {
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case '%':
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case '=':
 				lookahead++;
@@ -204,12 +170,12 @@ public class LexiScan {
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				break;
 			case '~':
@@ -219,12 +185,12 @@ public class LexiScan {
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				break;
 			case '&':
@@ -234,12 +200,12 @@ public class LexiScan {
 					case '&':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				break;
 			case '|':
@@ -249,7 +215,7 @@ public class LexiScan {
 					case '|':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
@@ -266,18 +232,18 @@ public class LexiScan {
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					case '>':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				break;
 			case '<':
@@ -287,49 +253,49 @@ public class LexiScan {
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					case '<':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 						lookahead++;
 						break;
 					default:
 						newToken = buildToken(tokenBuilder);
-						tokens.add(symbol.getTable().get(newToken));
+						parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				break;
 			case ';':
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case ':':
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case ',':
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case '(':
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case ')':
 				lookahead++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				newToken = buildToken(tokenBuilder);
-				tokens.add(symbol.getTable().get(newToken));
+				parse.getTokens().add(symbol.getTable().get(newToken));
 				break;
 			case '"': 
 				lookahead++;
@@ -340,7 +306,7 @@ public class LexiScan {
 				}
 				tokenBuilder.add((char)stream.get(lookahead).intValue());
 				newConstant = buildToken(tokenBuilder);
-				tokens.add(new TokenConstant("StringConstant", newConstant, "Constant"));
+				parse.getTokens().add(new TokenConstant("StringConstant", newConstant, "Constant"));
 				lookahead++;
 				break;
 			case '\'':
@@ -368,7 +334,7 @@ public class LexiScan {
 							else{
 								tokenBuilder.add((char)stream.get(lookahead).intValue()); // '\n'
 								newConstant = buildToken(tokenBuilder);
-								tokens.add(new TokenConstant("CharConstant", newConstant, "Constant"));
+								parse.getTokens().add(new TokenConstant("CharConstant", newConstant, "Constant"));
 								lookahead++;
 							}
 						}
@@ -384,7 +350,7 @@ public class LexiScan {
 						else{
 							tokenBuilder.add((char)stream.get(lookahead).intValue()); // 'a'
 							newConstant = buildToken(tokenBuilder);
-							tokens.add(new TokenConstant("CharConstant", newConstant, "Constant"));
+							parse.getTokens().add(new TokenConstant("CharConstant", newConstant, "Constant"));
 							lookahead++;
 						}
 					}
@@ -419,10 +385,10 @@ public class LexiScan {
 				}
 				newConstant = buildToken(tokenBuilder);
 				if(isFloat){
-					tokens.add(new TokenConstant("FloatingConstant", newConstant, "Constant"));
+					parse.getTokens().add(new TokenConstant("FloatingConstant", newConstant, "Constant"));
 				}
 				else{
-					tokens.add(new TokenConstant("IntegerConstant", newConstant, "Constant"));
+					parse.getTokens().add(new TokenConstant("IntegerConstant", newConstant, "Constant"));
 				}
 				break;
 			case 'a':
@@ -485,7 +451,7 @@ public class LexiScan {
 				}
 				newToken = buildToken(tokenBuilder);
 				if(symbol.getTable().containsKey(newToken)){
-					tokens.add(symbol.getTable().get(newToken));
+					parse.getTokens().add(symbol.getTable().get(newToken));
 				}
 				else{
 					isError = true;
@@ -503,8 +469,8 @@ public class LexiScan {
 		
 	}
 	
-	public boolean checkID(String newID){
-		TokenID[] tokID = idList.toArray(new TokenID[idList.size()]);
+	public boolean checkID(String newID, Parser parse){
+		TokenID[] tokID = parse.getIdList().toArray(new TokenID[parse.getIdList().size()]);
 		for(TokenID id: tokID){
 			if(id.getKey().equals(newID)){
 				return true;
@@ -519,5 +485,21 @@ public class LexiScan {
 			b.append(c);
 		}
 		return b.toString();
+	}
+
+	public int getTracker() {
+		return tracker;
+	}
+
+	public int getLookahead() {
+		return lookahead;
+	}
+
+	public boolean isError() {
+		return isError;
+	}
+
+	public void setTracker(int tracker) {
+		this.tracker = tracker;
 	}
 }
