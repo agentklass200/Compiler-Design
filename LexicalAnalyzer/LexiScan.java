@@ -5,7 +5,7 @@ import java.util.*;
 import LexicalAnalyzer.*;
 
 public class LexiScan {
-	int posNo, lineNo, tracker, lookahead;
+	int lineNo, tracker, lookahead;
 	char current;
 	ArrayList<Integer> stream = new ArrayList<Integer>();
 	ArrayList<Token> tokens = new ArrayList<Token>();
@@ -22,7 +22,6 @@ public class LexiScan {
 			file = new FileInputStream(fileName);
 			bReader = new BufferedReader(new InputStreamReader(file));
 			int val = 0;
-			posNo = 1;
 			lineNo = 1;
 		
 			
@@ -81,10 +80,17 @@ public class LexiScan {
 		String newToken, newConstant;
 		switch((char)stream.get(tracker).intValue()){
 			case ' ':
+				lookahead++;
+				break;
 			case '\t':
+				lookahead++;
+				break;
 			case '\n':
+				lookahead++;
+				break;
 			case '\r': // WhiteSpace
 				lookahead++;
+				lineNo++;
 				break;
 			case '_':  // Identifier
 				tokenBuilder.add((char)stream.get(tracker).intValue());
@@ -113,11 +119,13 @@ public class LexiScan {
 					isError = true;
 					System.out.println();
 					System.out.println("Invalid Token: Identifier name must not start with a digit.");
+					System.out.println("At line no: "+ lineNo);
 				}
 				else{
 					isError = true;
 					System.out.println();
 					System.out.println("Invalid Token: Identifier name not found.");
+					System.out.println("At line no: "+ lineNo);
 				}
 				break;
 			case '*':
@@ -248,6 +256,7 @@ public class LexiScan {
 						isError = true;
 						System.out.println();
 						System.out.println("Invalid Token! The token \"|\" is not valid");
+						System.out.println("At line no: "+ lineNo);
 				}
 				break;
 			case '>':
@@ -345,6 +354,7 @@ public class LexiScan {
 							isError = true;
 							System.out.println();
 							System.out.println("Invalid Token! Invalid Character Constant");
+							System.out.println("At line no: "+ lineNo);
 						}
 						else{
 							tokenBuilder.add((char)stream.get(lookahead).intValue()); // '\n
@@ -353,6 +363,7 @@ public class LexiScan {
 								isError = true;
 								System.out.println();
 								System.out.println("Invalid Token! Invalid Character Constant");
+								System.out.println("At line no: "+ lineNo);
 							}
 							else{
 								tokenBuilder.add((char)stream.get(lookahead).intValue()); // '\n'
@@ -368,6 +379,7 @@ public class LexiScan {
 							isError = true;
 							System.out.println();
 							System.out.println("Invalid Token! Invalid Character Constant");
+							System.out.println("At line no: "+ lineNo);
 						}
 						else{
 							tokenBuilder.add((char)stream.get(lookahead).intValue()); // 'a'
@@ -381,6 +393,7 @@ public class LexiScan {
 					isError = true;
 					System.out.println();
 					System.out.println("Invalid Token! Empty char");
+					System.out.println("At line no: "+ lineNo);
 				}
 				break;
 			case '0':
@@ -478,12 +491,14 @@ public class LexiScan {
 					isError = true;
 					System.out.println();
 					System.out.println("Invalid Token! The token \""+ newToken +"\" is not valid");
+					System.out.println("At line no: "+ lineNo);
 				}
 				break;
 			default:
 				isError = true;
 				System.out.println();
 				System.out.println("Invalid Token! The token \""+ (char)stream.get(tracker).intValue() +"\" is not valid");
+				System.out.println("At line no: "+ lineNo);
 		}
 		
 	}

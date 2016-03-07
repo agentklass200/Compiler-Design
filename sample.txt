@@ -5,9 +5,9 @@ INITIATE
 *: INITIALIZATION STAGE :*
 INT _x, _i=1;
 STR _samplestr = "Hello World";
-CHAR _c = 'z';
+CHAR _c = 'a';
 BOOL _b = TRUE;
-FLOAT _j = 2.05;
+FLOAT _j = 2.057;
 
 *: PRINTF STAGE :*
 REVEAL: "Hello \n World";
@@ -19,7 +19,7 @@ OBTAIN: _x;
 *: SAMPLE IF STATEMENT :*
 IF: _x ~= 20 || _i == 2
 >>
-(_x+5)/2;
+(_x-5)/-2;
 (_i-24)*5;
 <<
 
