@@ -322,13 +322,21 @@ public class LexiScan {
                         System.out.println("Error: String Constant not closed with '\"'.");
                         System.out.println("Error in Line Number: " + lineNo);
                         lookahead = lookahead - 3;
-                    }                    
+                    }
+                    if((char)stream.get(lookahead).intValue() == '\\'){
+						if((char)stream.get(lookahead + 1).intValue() == '\"'){
+							lookahead++;	
+							tokenBuilder.add((char)stream.get(lookahead).intValue());	
+						}
+					}                    
 					lookahead++;
 				}
-				tokenBuilder.add((char)stream.get(lookahead).intValue());
-				newConstant = buildToken(tokenBuilder);
-				parse.getTokens().add(new TokenConstant("StringConstant", newConstant, "Constant"));
-				lookahead++;
+				if(isError == false){
+					tokenBuilder.add((char)stream.get(lookahead).intValue());
+					newConstant = buildToken(tokenBuilder);
+					parse.getTokens().add(new TokenConstant("StringConstant", newConstant, "Constant"));
+					lookahead++;
+				}
 				break;
 			case '\'':
 				lookahead++;
@@ -338,10 +346,21 @@ public class LexiScan {
 					if((char)stream.get(lookahead).intValue() == '\\'){ // '\ or 'a
 						lookahead++;
 						if((char)stream.get(lookahead).intValue() =='\''){ // '\'
-							isError = true;
-							System.out.println();
-							System.out.println("Invalid Token! Invalid Character Constant");
-							System.out.println("At line no: "+ lineNo);
+							tokenBuilder.add((char)stream.get(lookahead).intValue()); 
+							lookahead++;
+							if((char)stream.get(lookahead).intValue() == '\''){
+								tokenBuilder.add((char)stream.get(lookahead).intValue());
+								newConstant = buildToken(tokenBuilder);
+								parse.getTokens().add(new TokenConstant("CharConstant", newConstant, "Constant"));
+								lookahead++;
+							}
+							else{
+								isError = true;
+								System.out.println();
+								System.out.println("Invalid Token! Invalid Character Constant");
+								System.out.println("At line no: "+ lineNo);
+							}
+							
 						}
 						else{
 							tokenBuilder.add((char)stream.get(lookahead).intValue()); // '\n
