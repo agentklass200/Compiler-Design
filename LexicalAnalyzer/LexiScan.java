@@ -502,6 +502,31 @@ public class LexiScan {
 	
 	public String buildToken(ArrayList<Character> cA){
 		StringBuilder b = new StringBuilder(cA.size());
+		String s;
+		if(cA.get(0) == '\"' || cA.get(0) == '\''){
+			for(int i = 0; i < cA.size(); i++){
+				if(cA.get(i) == '\\'){
+					if(cA.get(i + 1) == 'n'){
+						cA.remove(i);
+						cA.remove(i);
+						cA.add(i, '\n');
+					}
+					else if(cA.get(i + 1) == 'r'){
+						cA.remove(i);
+						cA.remove(i);
+						cA.add(i, '\r');
+					}
+					else if(cA.get(i + 1) == 't'){
+						cA.remove(i);
+						cA.remove(i);
+						cA.add(i, '\t');
+					}
+					else{
+						cA.remove(i);
+					}
+				}
+			}
+		}
 		for(Character c: cA){
 			b.append(c);
 		}
