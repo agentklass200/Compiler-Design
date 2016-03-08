@@ -24,7 +24,7 @@ INITIATE
 	FLOAT _j = 2.057;
 
 	*: PRINTF STAGE :*
-	REVEAL: "Hello \r World";
+	REVEAL: "Hello \n World";
 	REVEAL: "\t" +  _samplestr;
 	REVEAL: " \nInput value of x: ";
 	*: SCANF STAGE :*

@@ -502,7 +502,6 @@ public class LexiScan {
 	
 	public String buildToken(ArrayList<Character> cA){
 		StringBuilder b = new StringBuilder(cA.size());
-		String s;
 		if(cA.get(0) == '\"' || cA.get(0) == '\''){
 			for(int i = 0; i < cA.size(); i++){
 				if(cA.get(i) == '\\'){
