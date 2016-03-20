@@ -4,8 +4,6 @@ import LexicalAnalyzer.Token;
 
 public class TokenError extends Token {
 	private String key;
-	private String idType;
-	private String idValue;
 	private String errorMessage;
 	private int errorID;
 	private int lineNo;
@@ -19,8 +17,6 @@ public class TokenError extends Token {
 	public TokenError(String key, int errorID, int lineNo, int colNo){
 		super("ErrorToken");
 		this.key = key;
-		this.idType = null;
-		idValue = null;
 		super.isError = true;
 		this.errorID = errorID;
 		this.lineNo = lineNo;
@@ -31,8 +27,6 @@ public class TokenError extends Token {
 	public TokenError(String key, int errorID, int lineNo, int colNo, String indentifierError){
 		super("ErrorToken");
 		this.key = key;
-		this.idType = null;
-		idValue = null;
 		super.isError = true;
 		this.errorID = errorID;
 		this.lineNo = lineNo;
@@ -43,8 +37,6 @@ public class TokenError extends Token {
 	public TokenError(String key, int errorID, int lineNo, int colNo, char c){
 		super("ErrorToken");
 		this.key = key;
-		this.idType = null;
-		idValue = null;
 		super.isError = true;
 		this.errorID = errorID;
 		this.lineNo = lineNo;
@@ -78,14 +70,6 @@ public class TokenError extends Token {
 
 	public String getKey() {
 		return key;
-	}
-
-	public String getIdType() {
-		return idType;
-	}
-
-	public String getIdValue() {
-		return idValue;
 	}
 
 	public String getErrorMessage() {
