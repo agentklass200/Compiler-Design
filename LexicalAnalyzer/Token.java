@@ -68,7 +68,8 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return "[["+name+"]" + this.lineNo + ":" + this.colNo + "]";
+//		return "[["+name+"]" + this.lineNo + ":" + this.colNo + "]";
+		return "[" + name + "]";
 	}
 
 	public boolean isIgnored() {

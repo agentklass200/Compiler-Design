@@ -36,7 +36,8 @@ public class TokenID extends Token {
 	
 	@Override
 	public String toString() {
-		return "[" + key  + " " + this.getLineNo() + ":" + this.getColNo() + "]";
+//		return "[" + key  + " " + this.getLineNo() + ":" + this.getColNo() + "]";
+		return key;
 	}
 
 	public String getIdType() {
