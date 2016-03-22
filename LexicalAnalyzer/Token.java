@@ -6,6 +6,18 @@ public class Token {
 	protected String type;
 	protected boolean isIgnored;
 	protected boolean isError;
+	public int colNo;
+	public int lineNo;
+	
+	public Token(String name, String value, String type, int lineNo, int colNo){
+		this.name = name;
+		this.value = value;
+        this.type = type;
+        this.isIgnored = false;
+        this.isError = false;
+        this.lineNo = lineNo;
+        this.colNo = colNo;
+	}
 	
 	public Token(String name, String value, String type){
 		this.name = name;
@@ -13,19 +25,25 @@ public class Token {
         this.type = type;
         this.isIgnored = false;
         this.isError = false;
+        this.lineNo = 0;
+        this.colNo = 0;
 	}
 	
-	protected Token(String name){
+	protected Token(String name, int lineNo, int colNo){
 		this.name = name;
 		this.isIgnored = false;
         this.isError = false;
+        this.lineNo = lineNo;
+        this.colNo = colNo;
 	}
 	
-	protected Token(String name, String type){
+	protected Token(String name, String type, int lineNo, int colNo){
 		this.name = name;
 		this.type = type;
 		this.isIgnored = false;
         this.isError = false;
+        this.lineNo = lineNo;
+        this.colNo = colNo;
 	}
 	
 	public String getName() {
@@ -48,13 +66,9 @@ public class Token {
 		return value;
 	}
 
-	public void setType(String type) {
-		this.value = value;
-	}
-
 	@Override
 	public String toString() {
-		return "["+name+"]";
+		return "[["+name+"]" + this.lineNo + ":" + this.colNo + "]";
 	}
 
 	public boolean isIgnored() {
@@ -63,6 +77,22 @@ public class Token {
 
 	public boolean isError() {
 		return isError;
+	}
+
+	public int getColNo() {
+		return colNo;
+	}
+
+	public void setColNo(int colNo) {
+		this.colNo = colNo;
+	}
+
+	public int getLineNo() {
+		return lineNo;
+	}
+
+	public void setLineNo(int lineNo) {
+		this.lineNo = lineNo;
 	}
         
 	

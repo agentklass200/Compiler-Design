@@ -12,7 +12,7 @@ public class TokenWhitespace extends Token {
 	public static final String TAB_WHITESPACE = "TabWhitespace";
 	
 	public TokenWhitespace(String type){
-		super("Whitespace", type);
+		super("Whitespace", type, 0, 0);
 		this.key = null;
 		super.isIgnored = true;
 	}

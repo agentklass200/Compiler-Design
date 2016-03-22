@@ -9,11 +9,11 @@ import LexicalAnalyzer.TokenConstant;
 import Parsing.*;
 
 public class LexiScan {
-	private int lineNo, tracker, lookahead, colNo;
+	private int lineNo, tracker, lookahead, colNo, tokCol, tokLine;
 	public ArrayList<Integer> stream = new ArrayList<Integer>();
 	public ArrayList<Character> tokenBuilder = new ArrayList<Character>();
-	boolean isError = false;
-	SymbolTable symbol = new SymbolTable();
+	private Token tempToken;
+	private SymbolTable symbol = new SymbolTable();
 	
 	
 	
@@ -66,6 +66,8 @@ public class LexiScan {
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				lookahead++;
 				colNo++;
+				tokCol = colNo;
+				tokLine = lineNo;
 				if(Character.isLetter((char)stream.get(lookahead).intValue())){
 					tokenBuilder.add((char)stream.get(lookahead).intValue());
 					lookahead++;
@@ -87,7 +89,7 @@ public class LexiScan {
 						}
 					}
 					
-					return new TokenID(newID);
+					return new TokenID(newID, tokLine, tokCol);
 				}
 				else if(Character.isDigit((char)stream.get(lookahead).intValue())){
 					return new TokenError(TokenError.SCANNER_ERROR, 0, lineNo, colNo);
@@ -99,10 +101,13 @@ public class LexiScan {
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case ':':  /* *: Hello :hello :* */
 						lookahead++;
-						while(((char)stream.get(lookahead).intValue() != ':' || (char)stream.get(lookahead + 1).intValue() != '*') && isError == false){
+						colNo++;
+						while(((char)stream.get(lookahead).intValue() != ':' || (char)stream.get(lookahead + 1).intValue() != '*')){
 							 if((char)stream.get(lookahead).intValue() == '\r'){
                                  lineNo++;
                                  colNo = 0;
@@ -114,22 +119,26 @@ public class LexiScan {
 								 colNo++;
 							 }
                              if(stream.get(lookahead).intValue() == -1){
-                                 lookahead = lookahead - 3;
-                                 return new TokenError(TokenError.SCANNER_ERROR, 2, lineNo, colNo);
+                                 return new TokenError(TokenError.SCANNER_ERROR, 2, lineNo, --colNo);
                              }
                              lookahead++;
 						}
 						lookahead =  lookahead + 2;
-						 colNo = colNo + 2;
+						colNo = colNo + 2;
 						return new TokenWhitespace(TokenWhitespace.COMMENT_WHITESPACE);
 					default:
 						newToken = buildToken(tokenBuilder);
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 				}
 			case '+':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '+':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
@@ -140,101 +149,161 @@ public class LexiScan {
 					default:
 						newToken = buildToken(tokenBuilder);
 						if(parse.getPrevToken().getName() == "StringConstant"){
-							return symbol.getTable().get(newToken + "con");
+							tempToken = symbol.getTable().get(newToken + "con");
+							tempToken.setLineNo(tokLine);
+							tempToken.setColNo(tokCol);
+							return tempToken;
 						}
 						else{
-							return symbol.getTable().get(newToken + "add");
+							tempToken = symbol.getTable().get(newToken + "add");
+							tempToken.setLineNo(tokLine);
+							tempToken.setColNo(tokCol);
+							return tempToken;
 						}
 				}
 			case '-':
 				lookahead++;
+				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '-':
-						tokenBuilder.add((char)stream.get(lookahead).intValue());
-						newToken = buildToken(tokenBuilder);
-						lookahead++;
-						colNo++;
-						return symbol.getTable().get(newToken);
+						if(parse.getPrevToken().getName() !=  "Decrement"){
+							tokenBuilder.add((char)stream.get(lookahead).intValue());
+							newToken = buildToken(tokenBuilder);
+							lookahead++;
+							colNo++;
+							tempToken = symbol.getTable().get(newToken);
+							tempToken.setLineNo(tokLine);
+							tempToken.setColNo(tokCol);
+							return tempToken;
+						}
 					default:
 						newToken = buildToken(tokenBuilder);
 						if(parse.getPrevToken().getName() == "IntegerConstant" || 
 							parse.getPrevToken().getName() == "FloatingConstant" || 
-							parse.getPrevToken().getName() == "Identifier"){
-							return symbol.getTable().get(newToken + "sub");
+							parse.getPrevToken().getName() == "Identifier" || 
+							parse.getPrevToken().getName() == "Decrement"){
+							tempToken = symbol.getTable().get(newToken + "sub");
+							tempToken.setLineNo(tokLine);
+							tempToken.setColNo(tokCol);
+							return tempToken;
 						}
 						else{
-							return symbol.getTable().get(newToken + "neg");
+							tempToken = symbol.getTable().get(newToken + "neg");
+							tempToken.setLineNo(tokLine);
+							tempToken.setColNo(tokCol);
+							return tempToken;
 						}
 				}
 			case '/':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case '%':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case '=':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					default:
 						newToken = buildToken(tokenBuilder);
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 				}
 			case '~':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					default:
 						newToken = buildToken(tokenBuilder);
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 				}
 			case '&':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '&':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					default:
 						newToken = buildToken(tokenBuilder);
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 				}
 			case '|':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '|':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					default:
 						return new TokenError(TokenError.SCANNER_ERROR, 3, lineNo, colNo);
 				}
@@ -242,79 +311,128 @@ public class LexiScan {
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					case '>':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					default:
 						newToken = buildToken(tokenBuilder);
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 				}
 			case '<':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '=':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					case '<':
 						tokenBuilder.add((char)stream.get(lookahead).intValue());
 						newToken = buildToken(tokenBuilder);
 						lookahead++;
 						colNo++;
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 					default:
 						newToken = buildToken(tokenBuilder);
-						return symbol.getTable().get(newToken);
+						tempToken = symbol.getTable().get(newToken);
+						tempToken.setLineNo(tokLine);
+						tempToken.setColNo(tokCol);
+						return tempToken;
 				}
 			case ';':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case ':':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case ',':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case '(':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case ')':
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				newToken = buildToken(tokenBuilder);
-				return symbol.getTable().get(newToken);
+				tempToken = symbol.getTable().get(newToken);
+				tempToken.setLineNo(tokLine);
+				tempToken.setColNo(tokCol);
+				return tempToken;
 			case '"': 
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
-				while((char)stream.get(lookahead).intValue() != '"' && isError ==  false){
+				tokCol = colNo;
+				tokLine = lineNo;
+				while((char)stream.get(lookahead).intValue() != '"'){
 					if((char)stream.get(lookahead).intValue() == '\r' ){
 						lineNo++;
 						colNo = 0;
@@ -328,8 +446,7 @@ public class LexiScan {
 					
 					tokenBuilder.add((char)stream.get(lookahead).intValue());
 					if(stream.get(lookahead).intValue() == -1 ){
-                        lookahead = lookahead - 3;
-                        return new TokenError(TokenError.SCANNER_ERROR, 4, lineNo, colNo);
+                        return new TokenError(TokenError.SCANNER_ERROR, 4, lineNo, --colNo);
                     }
                     if((char)stream.get(lookahead).intValue() == '\\'){
 						if((char)stream.get(lookahead + 1).intValue() == '\"'){
@@ -339,16 +456,18 @@ public class LexiScan {
 						}
 					}                    
 					lookahead++;
-					colNo++;
 				}
 				tokenBuilder.add((char)stream.get(lookahead).intValue());
 				newConstant = buildToken(tokenBuilder);
 				lookahead++;
 				colNo++;
-				return new TokenConstant(TokenConstant.STRING_CONSTANT, newConstant, "Constant");
+				return new TokenConstant(TokenConstant.STRING_CONSTANT, newConstant, "Constant", lineNo, colNo);
 			case '\'':
 				lookahead++;
+				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue()); // '
+				tokCol = colNo;
+				tokLine = lineNo;
 				if((char)stream.get(lookahead).intValue() != '\''){
 					tokenBuilder.add((char)stream.get(lookahead).intValue()); // 'a
 					if((char)stream.get(lookahead).intValue() == '\\'){ // '\ or 'a
@@ -363,7 +482,7 @@ public class LexiScan {
 								newConstant = buildToken(tokenBuilder);
 								lookahead++;
 								colNo++;
-								return new TokenConstant(TokenConstant.CHAR_CONSTANT, newConstant, "Constant");
+								return new TokenConstant(TokenConstant.CHAR_CONSTANT, newConstant, "Constant", lineNo, colNo);
 							}
 							else{
 								return new TokenError(TokenError.SCANNER_ERROR, 5, lineNo, colNo);
@@ -382,7 +501,7 @@ public class LexiScan {
 								newConstant = buildToken(tokenBuilder);
 								lookahead++;
 								colNo++;
-								return new TokenConstant(TokenConstant.CHAR_CONSTANT, newConstant, "Constant");
+								return new TokenConstant(TokenConstant.CHAR_CONSTANT, newConstant, "Constant", lineNo, colNo);
 							}
 						}
 					}
@@ -397,7 +516,7 @@ public class LexiScan {
 							newConstant = buildToken(tokenBuilder);
 							lookahead++;
 							colNo++;
-							return new TokenConstant(TokenConstant.CHAR_CONSTANT, newConstant, "Constant");
+							return new TokenConstant(TokenConstant.CHAR_CONSTANT, newConstant, "Constant", lineNo, colNo);
 						}
 					}
 				}
@@ -418,6 +537,8 @@ public class LexiScan {
 				lookahead++;
 				colNo++;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
+				tokCol = colNo;
+				tokLine = lineNo;
 				while(Character.isDigit((char)stream.get(lookahead).intValue()) || ((char)stream.get(lookahead).intValue() == '.' && isFloat == false) ){
 					if((char)stream.get(lookahead).intValue() == '.'){
 						isFloat = true;
@@ -429,10 +550,10 @@ public class LexiScan {
 				}
 				newConstant = buildToken(tokenBuilder);
 				if(isFloat){
-					return new TokenConstant(TokenConstant.FLOATING_CONSTANT, newConstant, "Constant");
+					return new TokenConstant(TokenConstant.FLOATING_CONSTANT, newConstant, "Constant", lineNo, colNo);
 				}
 				else{
-					return new TokenConstant(TokenConstant.INTEGER_CONSTANT, newConstant, "Constant");
+					return new TokenConstant(TokenConstant.INTEGER_CONSTANT, newConstant, "Constant", lineNo, colNo);
 				}
 			case 'a':
 			case 'b':
@@ -488,6 +609,8 @@ public class LexiScan {
 			case 'Z':
 				lookahead++;
 				colNo++;
+				tokCol = colNo;
+				tokLine = lineNo;
 				tokenBuilder.add((char)stream.get(tracker).intValue());
 				while(Character.isLetter((char)stream.get(lookahead).intValue())){
 					tokenBuilder.add((char)stream.get(lookahead).intValue());
@@ -496,7 +619,10 @@ public class LexiScan {
 				}
 				newToken = buildToken(tokenBuilder);
 				if(symbol.getTable().containsKey(newToken)){
-					return symbol.getTable().get(newToken);
+					tempToken = symbol.getTable().get(newToken);
+					tempToken.setLineNo(tokLine);
+					tempToken.setColNo(tokCol);
+					return tempToken;
 				}
 				else{
 					return new TokenError(TokenError.SCANNER_ERROR, 7, lineNo, colNo, newToken);
@@ -506,16 +632,6 @@ public class LexiScan {
 		}
 		
 	}
-//	
-//	public boolean checkID(String newID, Parser parse){
-//		TokenID[] tokID = parse.getIdList().toArray(new TokenID[parse.getIdList().size()]);
-//		for(TokenID id: tokID){
-//			if(id.getKey().equals(newID)){
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
 	
 	public String buildToken(ArrayList<Character> cA){
 		StringBuilder b = new StringBuilder(cA.size());
@@ -555,10 +671,6 @@ public class LexiScan {
 
 	public int getLookahead() {
 		return lookahead;
-	}
-
-	public boolean isError() {
-		return isError;
 	}
 
 	public void setTracker(int tracker) {

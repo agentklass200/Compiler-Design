@@ -6,8 +6,6 @@ public class TokenError extends Token {
 	private String key;
 	private String errorMessage;
 	private int errorID;
-	private int lineNo;
-	private int colNo;
 	private String identifierError;
 	
 	public static final String SCANNER_ERROR = "ScannerErrorToken";
@@ -15,32 +13,26 @@ public class TokenError extends Token {
 	
 	
 	public TokenError(String key, int errorID, int lineNo, int colNo){
-		super("ErrorToken");
+		super("ErrorToken", lineNo, colNo);
 		this.key = key;
 		super.isError = true;
 		this.errorID = errorID;
-		this.lineNo = lineNo;
-		this.colNo = colNo;
 		this.identifierError = "";
 	}
 	
 	public TokenError(String key, int errorID, int lineNo, int colNo, String indentifierError){
-		super("ErrorToken");
+		super("ErrorToken", lineNo, colNo);
 		this.key = key;
 		super.isError = true;
 		this.errorID = errorID;
-		this.lineNo = lineNo;
-		this.colNo = colNo;
 		this.identifierError = indentifierError;
 	}
 	
 	public TokenError(String key, int errorID, int lineNo, int colNo, char c){
-		super("ErrorToken");
+		super("ErrorToken", lineNo, colNo);
 		this.key = key;
 		super.isError = true;
 		this.errorID = errorID;
-		this.lineNo = lineNo;
-		this.colNo = colNo;
 		this.identifierError = "" + c;
 	}
 	
@@ -65,7 +57,7 @@ public class TokenError extends Token {
 
 	@Override
 	public String toString() {
-		return "\n" + this.genErrorMessage() + "\n" + "Error at line no: " + this.lineNo + ", Col no: " + this.colNo + ".\n";
+		return "\n\n==================================\n" + this.genErrorMessage() + "\n" + "Error at line no: " + this.getLineNo() + ", Col no: " + this.getColNo() + ".\n==================================\n\n";
 	}
 
 	public String getKey() {

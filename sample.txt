@@ -33,7 +33,7 @@ INITIATE
 	*: SAMPLE IF STATEMENT :*
 	IF: _x ~= 20 || _i == 2 && ~_b
 	>>
-		_j = (_x-5)/-2;
+		_j = (_x----5)/-2;
 		_x = (_i+24)*5;
 	<<
 
