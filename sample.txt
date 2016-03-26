@@ -26,7 +26,7 @@ INITIATE
 	*: PRINTF STAGE :*
 	REVEAL: "Hello \n World";
 	REVEAL: "\t" +  _samplestr;
-	REVEAL: " \nInput value of x: ";
+	REVEAL: " \nInput value of x: "; *: HINDI NA KASAMA SA DERIVATION :*
 	*: SCANF STAGE :*
 	OBTAIN: _x;
 
@@ -70,6 +70,7 @@ INITIATE
 		>>
 			REVEAL: "This is a Sample While Loop";
 		<<
+		ENDIF
 		_i++;
 	<<
 <<

@@ -625,9 +625,11 @@ public class LexiScan {
 					return tempToken;
 				}
 				else{
-					return new TokenError(TokenError.SCANNER_ERROR, 7, lineNo, colNo, newToken);
+					return new TokenError(TokenError.SCANNER_ERROR, 7, lineNo, tokCol, newToken);
 				}
 			default:
+				lookahead++;
+				colNo++;
 				return new TokenError(TokenError.SCANNER_ERROR, 7, lineNo, colNo, (char)stream.get(tracker).intValue());
 		}
 		

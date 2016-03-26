@@ -22,8 +22,8 @@ public class Parser {
 		for(int i = 0; i < scanner.stream.size() -1; i++){
 			System.out.print((char)scanner.stream.get(i).intValue());
 		}
-		System.out.println();
 		
+		System.out.println();
 		System.out.println();
 		System.out.println();
 		System.out.println("List of Tokens");
@@ -55,6 +55,7 @@ public class Parser {
 		System.out.println();
 		System.out.println(idMaps.toString());
 	}
+	
 
 
 
