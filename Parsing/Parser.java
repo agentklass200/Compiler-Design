@@ -28,29 +28,8 @@ public class Parser {
 		System.out.println("List of Tokens");
 		System.out.println("========================");
 		
-		boolean isPLined = false;
-		while(scanner.stream.get(scanner.getTracker()) != -1){
-			if(newToken != null){
-				if(!newToken.isIgnored()){
-					prevToken = newToken;
-				}
-			}
-			newToken = scanner.getToken(this);
-			scanner.setTracker(scanner.getLookahead());
-			scanner.tokenBuilder.clear();
-			
-			//Print
-			if(!newToken.isIgnored()){
-				System.out.print(newToken);
-				isPLined = false;
-			}
-			else{
-				if(newToken.toString() == TokenWhitespace.RETURN_WHITESPACE && !isPLined){
-					System.out.println();
-					isPLined = true;
-				}
-			}
-		}
+                DisplayTokens();
+		
 		System.out.println();
 		System.out.println(idMaps.toString());
 	}
@@ -78,7 +57,31 @@ public class Parser {
 	}
 
 
-
+        public void DisplayTokens() {
+            boolean isPLined = false;
+		while(scanner.stream.get(scanner.getTracker()) != -1){
+			if(newToken != null){
+				if(!newToken.isIgnored()){
+					prevToken = newToken;
+				}
+			}
+			newToken = scanner.getToken(this);
+			scanner.setTracker(scanner.getLookahead());
+			scanner.tokenBuilder.clear();
+			
+			//Print
+			if(!newToken.isIgnored()){
+				System.out.print(newToken);
+				isPLined = false;
+			}
+			else{
+				if(newToken.toString() == TokenWhitespace.RETURN_WHITESPACE && !isPLined){
+					System.out.println();
+					isPLined = true;
+				}
+			}
+		}
+        }
 
 
 	
