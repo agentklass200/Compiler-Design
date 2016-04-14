@@ -21,7 +21,7 @@ INITIATE
 	STR _samplestr = "Hello \n World";
 	CHAR _c = 'a';
 	BOOL _b = TRUE;
-	FLOAT _j = 2.057;
+	FLOAT _j = 2.057
 
 	*: PRINTF STAGE :*
 	REVEAL: "Hello \n World";
