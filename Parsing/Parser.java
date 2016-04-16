@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import LexicalAnalyzer.*;
+import Parsing.TableReader;
 
 public class Parser {
 	private LexiScan scanner;
 	private HashMap<String, Token> idMaps = new HashMap<String, Token>();
-	
+	private String[][] actTab = TableReader.CreateActionTable("src/action.csv");
+	private int[][] gotoTab = TableReader.CreateGoToTable("src/GOTO.csv");
 	private Token newToken = null;
 	private Token prevToken = null;
 	
@@ -32,6 +34,14 @@ public class Parser {
 		
 		System.out.println();
 		System.out.println(idMaps.toString());
+		// Testing
+		displayActionTable();
+		System.out.println();
+		displayGOTOTable();
+		System.out.println();
+		
+		System.out.println(actTab[106][getTokenVal("StringConstant")]);
+		// End Testing
 	}
 	
 
@@ -54,6 +64,29 @@ public class Parser {
 
 	public Token getPrevToken() {
 		return prevToken;
+	}
+	
+	public void displayActionTable(){
+		System.out.println("Action Table");
+		System.out.println("========================");
+		for(int i = 0; i < actTab.length; i++){
+			System.out.print(i + ". [");
+			for(int j = 0; j < actTab[i].length; j++){
+				System.out.print("\""+ actTab[i][j] +"\",");
+			}
+			System.out.println("]");
+		}
+	}
+	public void displayGOTOTable(){
+		System.out.println("Go To Table");
+		System.out.println("========================");
+		for(int i = 0; i < gotoTab.length; i++){
+			System.out.print(i + ". [");
+			for(int j = 0; j < gotoTab[i].length; j++){
+				System.out.print(gotoTab[i][j] +",");
+			}
+			System.out.println("]");
+		}
 	}
 
 	public void DisplayTokens() {
@@ -85,79 +118,79 @@ public class Parser {
 	public int getVarVal(String var){
 		switch(var){
 			case "BPRIME":
-				return 0;
+				return 37;
 			case "B":
-				return 1;
+				return 0;
 			case "SCOPE":
-				return 2;
+				return 1;
 			case "STMTS":
-				return 3;
+				return 2;
 			case "STMT":
-				return 4;
+				return 3;
 			case "DECLARATIONSTMT":
-				return 5;
+				return 4;
 			case "ITERATSTMT":
-				return 6;
+				return 5;
 			case "INPUTSTMT":
-				return 7;
+				return 6;
 			case "OUTPUTSTMT":
-				return 8;
+				return 7;
 			case "ASSIGNMENTSTMT":
-				return 9;
+				return 8;
 			case "CONVERTSTMT":
-				return 10;
+				return 9;
 			case "CONDITIONALSTMT":
-				return 11;
+				return 10;
 			case "ELSESTMT":
-				return 12;
+				return 11;
 			case "INITIALIZATION":
-				return 13;
+				return 12;
 			case "INITIALIZATIONPRIME":
-				return 14;
+				return 13;
 			case "WHILELOOP":
-				return 15;
+				return 14;
 			case "FORLOOP":
-				return 16;
+				return 15;
 			case "ASSIGNMENT":
-				return 17;
+				return 16;
 			case "DATATYPE":
-				return 18;
+				return 17;
 			case "EXPR":
-				return 19;
+				return 18;
 			case "LOGEXPR":
-				return 20;
+				return 19;
 			case "LOGOPER":
-				return 21;
+				return 20;
 			case "EQEXPR":
-				return 22;
+				return 21;
 			case "EQOPER":
-				return 23;
+				return 22;
 			case "RELEXPR":
-				return 24;
+				return 23;
 			case "RELOPER":
-				return 25;
+				return 24;
 			case "TERMEXPR":
-				return 26;
+				return 25;
 			case "TERMOPER":
-				return 27;
+				return 26;
 			case "FACTEXPR":
-				return 28;
+				return 27;
 			case "FACTOPER":
-				return 29;
+				return 28;
 			case "UNARYEXPR":
-				return 30;
+				return 29;
 			case "UNARYOPER":
-				return 31;
+				return 30;
 			case "POSTEXPR":
-				return 32;
+				return 31;
 			case "POSTOPER":
-				return 33;
+				return 32;
 			case "VALUE":
-				return 34;
+				return 33;
 			case "CONST":
-				return 35;
+				return 34;
 			case "BOOLCONST":
-				return 36;
+				return 35;
 			default:
 				return -1;
 				
