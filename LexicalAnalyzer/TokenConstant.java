@@ -7,7 +7,7 @@ public class TokenConstant extends Token {
 	
 	public static final String STRING_CONSTANT = "StringConstant";
 	public static final String INTEGER_CONSTANT = "IntegerConstant";
-	public static final String FLOATING_CONSTANT = "FloatingConstant";
+	public static final String FLOATING_CONSTANT = "FloatConstant";
 	public static final String CHAR_CONSTANT = "CharConstant";
 	
 	public TokenConstant(String name, String key, String type ,int lineNo, int colNo){

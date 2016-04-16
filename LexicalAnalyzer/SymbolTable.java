@@ -41,8 +41,8 @@ public class SymbolTable {
         table.put("&",new Token("ConditionDelimiter","&","Special Character"));
         table.put("+con",new Token("Concat","+","Special Character"));
 
-        table.put("TRUE",new TokenConstant("TrueBoolean","TRUE","Constant"));
-        table.put("FALSE",new TokenConstant("FalseBoolean","FALSE","Constant"));
+        table.put("TRUE",new TokenConstant("True","TRUE","Constant"));
+        table.put("FALSE",new TokenConstant("False","FALSE","Constant"));
 
         table.put("INT", new Token("Integer", "INT", "Data Type"));
         table.put("BOOL", new Token("Boolean", "BOOL", "Data Type"));

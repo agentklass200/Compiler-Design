@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import LexicalAnalyzer.*;
 import Parsing.TableReader;
+import Parsing.StateProp;
+import java.util.Stack;
 
 public class Parser {
 	private LexiScan scanner;
@@ -14,34 +16,71 @@ public class Parser {
 	private Token newToken = null;
 	private Token prevToken = null;
 	
+	private Stack<Token> tokenStack = new Stack<Token>();
+	private Stack<Integer> stateStack = new Stack<Integer>();
+	private Token lookaheadToken;
+	
 	
 	public Parser(String fileName) throws IOException{
-		scanner = new LexiScan(fileName);
 		
-		System.out.println("Sample Program: Source Code");
-		System.out.println("========================");
-		for(int i = 0; i < scanner.stream.size() -1; i++){
-			System.out.print((char)scanner.stream.get(i).intValue());
-		}
-		
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println("List of Tokens");
-		System.out.println("========================");
-		
-        DisplayTokens();
-		
+        displayTokens(fileName);
+        
 		System.out.println();
 		System.out.println(idMaps.toString());
 		// Testing
+		scanner = new LexiScan(fileName);
 		displayActionTable();
 		System.out.println();
 		displayGOTOTable();
 		System.out.println();
 		
-		System.out.println(actTab[106][getTokenVal("StringConstant")]);
 		// End Testing
+		
+		// Parsing Begins!
+		stateStack.push(0);
+		tokenStack.push(new Token("StackEnd", "$", "EndOfStack"));
+		System.out.println();
+		System.out.println("Parsing");
+		System.out.println("========================");
+		
+		
+		while(scanner.stream.get(scanner.getTracker()) != -1){
+			// Get Token
+			if(newToken != null){
+				if(!newToken.isIgnored() && !newToken.isError()){
+					prevToken = newToken;
+				}
+			}
+			newToken = scanner.getToken(this);
+			scanner.setTracker(scanner.getLookahead());
+			scanner.tokenBuilder.clear();
+			
+			if(!newToken.isIgnored()&& !newToken.isError()){
+				Token lookaheadToken = newToken;
+				boolean needToken = false;
+				System.out.println("Lookahead("+lookaheadToken.getName()+")");
+				while(!needToken){
+					StateProp state = new StateProp(actTab[stateStack.peek()][getTokenVal(lookaheadToken.getName())]);
+					if(state.getAction() == StateProp.SHIFT){
+						stateStack.push(state.getStateNum());
+						tokenStack.push(lookaheadToken);
+						System.out.println("Shift: " + lookaheadToken.getName());
+						System.out.println(stateStack);
+						System.out.println(tokenStack + "\n");
+						needToken = true;
+					}
+					else if(state.getAction() == StateProp.REDUCE){
+						needToken = true;
+					}
+					else{
+						needToken = true;
+					}
+				}
+			}
+		}
+		
+		
+		
 	}
 	
 
@@ -89,7 +128,15 @@ public class Parser {
 		}
 	}
 
-	public void DisplayTokens() {
+	public void displayTokens(String fileName) throws IOException {
+		try {
+			scanner = new LexiScan(fileName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("List of Tokens");
+		System.out.println("========================");
         boolean isPLined = false;
 		while(scanner.stream.get(scanner.getTracker()) != -1){
 			if(newToken != null){
@@ -113,6 +160,9 @@ public class Parser {
 				}
 			}
 		}
+		newToken = null;
+		prevToken = null;
+		
      }
 	
 	public int getVarVal(String var){
@@ -279,13 +329,13 @@ public class Parser {
 				return 39;
 			case "GreaterThanOrEqual":
 				return 40;
-			case "Plus":
+			case "Add":
 				return 41;
-			case "Minus":
+			case "Subtract":
 				return 42;
 			case "Concat":
 				return 43;
-			case "Times":
+			case "Multiply":
 				return 44;
 			case "Divide":
 				return 45;

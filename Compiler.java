@@ -7,6 +7,6 @@ import Parsing.Parser;
 public class Compiler {
 	public static void main(String[] args) throws IOException {
 		String fileName = "src/sample.txt";
-		new Parser(fileName);		
+		new Parser(fileName);	
 	}
 }
