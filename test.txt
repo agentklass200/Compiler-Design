@@ -1,4 +1,9 @@
 INITIATE
 >>
+	REVEAL: "The value of x now is: " + _x;
+	REVEAL: "The value of i now is: " + _i;
+	_j TRANSFORMTO STR;
+	REVEAL: _j;
+	OBTAIN: _x;
 <<
 TERMINATE
