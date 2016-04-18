@@ -7,6 +7,8 @@ import Parsing.TableReader;
 import Parsing.StateProp;
 import Parsing.GrammarRules;
 import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
 	private LexiScan scanner;
@@ -18,8 +20,12 @@ public class Parser {
 	private HashMap<Integer, GrammarRules> rules;
 	private Stack<Token> tokenStack = new Stack<Token>();
 	private Stack<Integer> stateStack = new Stack<Integer>();
+	public boolean recoveryMode = false;
+	
+	private Token parsingTreeRoot;
 	
 	public Parser(String fileName) throws IOException{
+		
 		
         displayTokens(fileName);
         initGrammar();
@@ -42,6 +48,8 @@ public class Parser {
 		System.out.println("Parsing");
 		System.out.println("========================");
 		boolean isEOF = false;
+		
+		int stepCounter = 1;
 		
 		
 		while(!isEOF){
@@ -68,51 +76,149 @@ public class Parser {
 			if(!newToken.isIgnored()&& !newToken.isError()){
 				Token lookaheadToken = newToken;
 				boolean needToken = false;
+				
 				System.out.println("\nLookahead: "+lookaheadToken.getName());
 				StateProp state = new StateProp(actTab[stateStack.peek()][getTokenVal(lookaheadToken.getName())]);
 				while(!needToken){
-					if(state.getAction() == StateProp.SHIFT){
-						stateStack.push(state.getStateNum());
-						tokenStack.push(lookaheadToken);
-						System.out.println("Shift: " + lookaheadToken.getName());
-//						System.out.println(stateStack);
-//						System.out.println(tokenStack);
-						needToken = true;
-					}
-					else if(state.getAction() == StateProp.REDUCE){
-						GrammarRules rule = getRules(state.getStateNum());
-						for(int i = 0; i < rule.getChildNo(); i++){
-							stateStack.pop();
-							tokenStack.pop();
-						}
-						tokenStack.push(rule.getVar());
-						System.out.println("Reduce by Rule #"+ rule.getRuleNo() + ": " + rule.getInfo());
-//						System.out.println(tokenStack);
-						if(rule.getRuleNo() != 0){
-							stateStack.push(gotoTab[stateStack.peek()][getVarVal(tokenStack.peek().getName())]);
-							state = new StateProp(actTab[stateStack.peek()][getTokenVal(lookaheadToken.getName())]);
-							System.out.println("\nLookahead: "+lookaheadToken.getName());
-//							System.out.println(stateStack);
+					if(recoveryMode){
+						if(state.getAction() != StateProp.ERROR){
+							if(state.getAction() == StateProp.SHIFT){
+								stateStack.push(state.getStateNum());
+								tokenStack.push(lookaheadToken);
+								System.out.println(stepCounter++ + ". Shift: " + lookaheadToken.getName());
+								needToken = true;
+								recoveryMode = false;
+								System.out.println("=======================================");
+							}
+							else if(state.getAction() == StateProp.REDUCE){
+								GrammarRules rule = getRules(state.getStateNum());
+								List<Token> tokenNodes = new ArrayList<Token>();
+								Stack<Token> tempStack = new Stack<Token>();
+								for(int i = 0; i < rule.getChildNo(); i++){
+									stateStack.pop();
+									tempStack.push(tokenStack.pop());
+								}
+								for(int i = 0; i < rule.getChildNo(); i++){
+									tokenNodes.add(tempStack.pop());
+								}
+								if(rule.getChildNo() == 0){
+									tokenStack.push(new TokenVariable(rule.getName()));
+								}
+								else{
+									tokenStack.push(new TokenVariable(rule.getName(), tokenNodes));
+								}
+								System.out.println(stepCounter++ + ". Reduce by Rule #"+ rule.getRuleNo() + ": " + rule.getInfo());
+								System.out.println("=======================================");
+//								System.out.println(tokenStack);
+								if(rule.getRuleNo() != 0){
+									stateStack.push(gotoTab[stateStack.peek()][getVarVal(tokenStack.peek().getName())]);
+									state = new StateProp(actTab[stateStack.peek()][getTokenVal(lookaheadToken.getName())]);
+									System.out.println("\nLookahead: "+lookaheadToken.getName());
+									
+									
+//									System.out.println(stateStack);
+								}
+								else{
+									System.out.println("\nACCEPTED!!!\n" + tokenStack);
+									needToken = true;
+								}
+								recoveryMode = false;
+								
+							}
 						}
 						else{
-							System.out.println("ACCEPTED BITCH!!!");
 							needToken = true;
+							System.out.println("SKIP!");
 						}
 					}
 					else{
-						needToken = true;
-						isEOF = true;
-						System.out.println("ERROR");
-						System.out.println(stateStack);
-						System.out.println(tokenStack);
+						if(state.getAction() == StateProp.SHIFT){
+							stateStack.push(state.getStateNum());
+							tokenStack.push(lookaheadToken);
+							System.out.println(stepCounter++ + ". Shift: " + lookaheadToken.getName());
+//							System.out.println(stateStack);
+//							System.out.println(tokenStack);
+							needToken = true;
+						}
+						else if(state.getAction() == StateProp.REDUCE){
+							GrammarRules rule = getRules(state.getStateNum());
+							List<Token> tokenNodes = new ArrayList<Token>();
+							Stack<Token> tempStack = new Stack<Token>();
+							for(int i = 0; i < rule.getChildNo(); i++){
+								stateStack.pop();
+								tempStack.push(tokenStack.pop());
+							}
+							for(int i = 0; i < rule.getChildNo(); i++){
+								tokenNodes.add(tempStack.pop());
+								tokenNodes.get(i).nodeOrder = i;
+							}
+							if(rule.getChildNo() == 0){
+								tokenStack.push(new TokenVariable(rule.getName()));
+							}
+							else{
+								tokenStack.push(new TokenVariable(rule.getName(), tokenNodes));
+							}
+							System.out.println(stepCounter++ + ". Reduce by Rule #"+ rule.getRuleNo() + ": " + rule.getInfo());
+//							System.out.println(tokenStack);
+							if(rule.getRuleNo() != 0){
+								stateStack.push(gotoTab[stateStack.peek()][getVarVal(tokenStack.peek().getName())]);
+								state = new StateProp(actTab[stateStack.peek()][getTokenVal(lookaheadToken.getName())]);
+								System.out.println("\nLookahead: "+lookaheadToken.getName());
+								
+//								System.out.println(stateStack);
+							}
+							else{
+								System.out.println("\nACCEPTED!!!\n" + tokenStack);
+								needToken = true;
+							}
+						}
+						else{
+							int errorLineNumber;
+							if(!tokenStack.peek().isNonTerminal){
+								errorLineNumber = tokenStack.peek().lineNo;
+							}
+							else{
+								errorLineNumber = lookaheadToken.lineNo;
+							}
+							System.out.println("=======================================");
+							System.out.println("SYNTAX ERROR! Panic Mode Recovery");
+							System.out.println("Line Number: " + errorLineNumber);
+							System.out.println("=======================================");
+							System.out.println("\n** Original Stack **");
+							System.out.println(stateStack);
+							System.out.println(tokenStack);
+							System.out.println("** !Original Stack **\n");
+							
+							boolean isStatement = false;
+							
+							
+							while(!isStatement && tokenStack.peek().getName() != "EOF"){
+								if(gotoTab[stateStack.peek()][getVarVal("STMT")] != -1){
+									isStatement = true;
+								}
+								else{
+									stateStack.pop();
+									tokenStack.pop();
+								}
+							}
+							System.out.println("** New Stack **");
+							System.out.println(stateStack);
+							System.out.println(tokenStack);
+							System.out.println("** !New Stack **");
+							recoveryMode = true;
+							System.out.println("\nLookahead: "+lookaheadToken.getName());
+							state = new StateProp(actTab[stateStack.peek()][getTokenVal(lookaheadToken.getName())]);
+						}
 					}
+					
 				}
 			}
 		}
 		
-		
+		this.parsingTreeRoot = tokenStack.peek();
 		
 	}
+	
 	
 
 
@@ -223,7 +329,7 @@ public class Parser {
 		rules.put(20, new GrammarRules("CONDITIONALSTMT","CONDITIONALSTMT -> if colon EXPR SCOPE ELSESTMT", 20, 5));
 		rules.put(21, new GrammarRules("ELSESTMT","ELSESTMT -> elseIf colon EXPR SCOPE ELSESTMT", 21, 5));
 		rules.put(22, new GrammarRules("ELSESTMT","ELSESTMT -> else SCOPE endIf", 22, 3));
-		rules.put(23, new GrammarRules("ELSESTMT","endIf", 23, 1));
+		rules.put(23, new GrammarRules("ELSESTMT","ELSESTMT -> endIf", 23, 1));
 		rules.put(24, new GrammarRules("INITIALIZATION","INITIALIZATION -> ASSIGNMENT INITIALIZATIONPRIME", 24, 2));
 		rules.put(25, new GrammarRules("INITIALIZATION","INITIALIZATION -> id INITIALIZATIONPRIME", 25, 2));
 		rules.put(26, new GrammarRules("INITIALIZATIONPRIME","INITIALIZATIONPRIME -> comma INITIALIZATION", 26, 2));
@@ -371,105 +477,105 @@ public class Parser {
 	
 	public int getTokenVal(String token){
 		switch(token){
-			case "Initiate":
+			case "initiate":
 				return 0;
-			case "Terminate":
+			case "terminate":
 				return 1;
-			case "Start":
+			case "start":
 				return 2;
-			case "End":
+			case "end":
 				return 3;
-			case "Delimiter":
+			case "delimiter":
 				return 4;
-			case "Input":
+			case "input":
 				return 5;
-			case "Colon":
+			case "colon":
 				return 6;
-			case "Identifier":
+			case "identifier":
 				return 7;
-			case "Assignment":
+			case "assignment":
 				return 8;
-			case "Output":
+			case "output":
 				return 9;
-			case "Convert":
+			case "convert":
 				return 10;
-			case "If":
+			case "if":
 				return 11;
-			case "ElseIf":
+			case "elseIf":
 				return 12;
-			case "Else":
+			case "else":
 				return 13;
-			case "EndIf":
+			case "endIf":
 				return 14;
-			case "Comma":
+			case "comma":
 				return 15;
-			case "WhileLoop":
+			case "whileLoop":
 				return 16;
-			case "ForLoop":
+			case "forLoop":
 				return 17;
-			case "ConditionDelimiter":
+			case "conditionDelimiter":
 				return 18;
-			case "String":
+			case "string":
 				return 19;
-			case "Character":
+			case "character":
 				return 20;
-			case "Integer":
+			case "integer":
 				return 21;
-			case "Boolean":
+			case "boolean":
 				return 22;
-			case "Float":
+			case "float":
 				return 23;
-			case "StringConstant":
+			case "stringConstant":
 				return 24;
-			case "CharConstant":
+			case "charConstant":
 				return 25;
-			case "FloatConstant":
+			case "floatConstant":
 				return 26;
-			case "IntegerConstant":
+			case "integerConstant":
 				return 27;
-			case "True":
+			case "true":
 				return 28;
-			case "False":
+			case "false":
 				return 29;
-			case "OpenParen":
+			case "openParen":
 				return 30;
-			case "CloseParen":
+			case "closeParen":
 				return 31;
-			case "And":
+			case "and":
 				return 32;
-			case "Or":
+			case "or":
 				return 33;
-			case "Equal":
+			case "equal":
 				return 34;
-			case "NotEqual":
+			case "notEqual":
 				return 35;
-			case "LessThan":
+			case "lessThan":
 				return 36;
-			case "LessThanOrEqual":
+			case "lessThanOrEqual":
 				return 37;
-			case "GreaterThan":
+			case "greaterThan":
 				return 38;
-			case "GreaterThanOrEqual":
+			case "greaterThanOrEqual":
 				return 39;
-			case "Add":
+			case "plus":
 				return 40;
-			case "Subtract":
+			case "minus":
 				return 41;
-			case "Concat":
+			case "concat":
 				return 42;
-			case "Multiply":
+			case "times":
 				return 43;
-			case "Divide":
+			case "divide":
 				return 44;
-			case "Modulo":
+			case "modulo":
 				return 45;
-			case "Negative":
+			case "negative":
 				return 46;
-			case "Not":
+			case "not":
 				return 47;
-			case "Increment":
+			case "increment":
 				return 48;
-			case "Decrement":
+			case "decrement":
 				return 49;
 			case "EOF":
 				return 50;
@@ -477,6 +583,22 @@ public class Parser {
 				return -1;
 			
 		}
+	}
+
+
+
+
+
+	public Token getParsingTreeRoot() {
+		return parsingTreeRoot;
+	}
+
+
+
+
+
+	public void setParsingTreeRoot(Token parsingTreeRoot) {
+		this.parsingTreeRoot = parsingTreeRoot;
 	}
        
 

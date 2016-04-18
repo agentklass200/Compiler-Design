@@ -8,14 +8,14 @@ public class TokenID extends Token {
 	private String idValue;
 	
 	public TokenID(String key, int lineNo, int colNo){
-		super("Identifier", lineNo, colNo);
+		super("identifier", lineNo, colNo);
 		this.setKey(key);
 		this.setIdType(null);
 		setIdValue(null);
 	}
 	
 	public TokenID(String key){
-		super("Identifier", 0,0);
+		super("identifier", 0,0);
 		this.setKey(key);
 		this.setIdType(null);
 		setIdValue(null);

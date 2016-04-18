@@ -1,0 +1,28 @@
+*: FAJAMAA LANGUAGE :*
+
+*:
+
+This is a sample program
+
+for FAJAMAA LANGUAGE
+
+==========================
+Andre Ayaquil
+Christian Antioquia
+Alecxis Banag
+Mariano Camarillo
+Megan Chan
+Jim Paul Lucido
+Angelo Magsino
+==========================
+
+:*
+
+INITIATE
+>>
+ 	LAPSE: _x = 0 & _x < 10 & _x++
+ 	>>
+ 		REVEAL: "Hello World -" + 1;
+ 	<<
+<<
+TERMINATE

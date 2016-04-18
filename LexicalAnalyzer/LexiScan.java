@@ -148,7 +148,7 @@ public class LexiScan {
 						return symbol.getTable().get(newToken);
 					default:
 						newToken = buildToken(tokenBuilder);
-						if(parse.getPrevToken().getName() == "StringConstant"){
+						if(parse.getPrevToken().getName() == "stringConstant"){
 							tempToken = symbol.getTable().get(newToken + "con");
 							tempToken.setLineNo(tokLine);
 							tempToken.setColNo(tokCol);
@@ -169,7 +169,7 @@ public class LexiScan {
 				tokLine = lineNo;
 				switch((char)stream.get(lookahead).intValue()){
 					case '-':
-						if(parse.getPrevToken().getName() !=  "Decrement"){
+						if(parse.getPrevToken().getName() !=  "decrement"){
 							tokenBuilder.add((char)stream.get(lookahead).intValue());
 							newToken = buildToken(tokenBuilder);
 							lookahead++;
@@ -181,10 +181,10 @@ public class LexiScan {
 						}
 					default:
 						newToken = buildToken(tokenBuilder);
-						if(parse.getPrevToken().getName() == "IntegerConstant" || 
-							parse.getPrevToken().getName() == "FloatingConstant" || 
-							parse.getPrevToken().getName() == "Identifier" || 
-							parse.getPrevToken().getName() == "Decrement"){
+						if(parse.getPrevToken().getName() == "integerConstant" || 
+							parse.getPrevToken().getName() == "floatingConstant" || 
+							parse.getPrevToken().getName() == "identifier" || 
+							parse.getPrevToken().getName() == "decrement"){
 							tempToken = symbol.getTable().get(newToken + "sub");
 							tempToken.setLineNo(tokLine);
 							tempToken.setColNo(tokCol);
