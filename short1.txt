@@ -1,6 +1,6 @@
 INITIATE
 >>
-	INT _x = 4 + 10 * 20;
+	INT _x = 4 + 10 * 20 - 30;
 	FLOAT _f;
 
 	REVEAL: "Hello World";
