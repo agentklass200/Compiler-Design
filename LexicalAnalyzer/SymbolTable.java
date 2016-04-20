@@ -9,12 +9,12 @@ public class SymbolTable {
     private HashMap<String, Token> table = new HashMap<String, Token>();
 
     public SymbolTable(){
-        table.put("+add",new Token("plus","+","Arithmetic Operator"));
+        table.put("+add",new Token("add","+","Arithmetic Operator"));
         table.put("++",new Token("increment","++","Arithmetic Operator"));
-        table.put("-sub",new Token("minus","-","Arithmetic Operator"));
+        table.put("-sub",new Token("subtract","-","Arithmetic Operator"));
         table.put("-neg",new Token("negative","-","Arithmetic Operator"));
         table.put("--",new Token("decrement","--","Arithmetic Operator"));
-        table.put("*",new Token("times","*","Arithmetic Operator"));
+        table.put("*",new Token("multiply","*","Arithmetic Operator"));
         table.put("/",new Token("divide","/","Arithmetic Operator"));
         table.put("%",new Token("modulo","%","Arithmetic Operator"));
 

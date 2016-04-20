@@ -359,12 +359,12 @@ public class Parser {
 		rules.put(50, new GrammarRules("RELOPER","RELOPER -> greaterThanOrEqual", 50, 1));
 		rules.put(51, new GrammarRules("TERMEXPR","TERMEXPR -> TERMEXPR TERMOPER FACTEXPR", 51, 3));
 		rules.put(52, new GrammarRules("TERMEXPR","TERMEXPR -> FACTEXPR", 52, 1));
-		rules.put(53, new GrammarRules("TERMOPER","TERMOPER -> plus", 53, 1));
-		rules.put(54, new GrammarRules("TERMOPER","TERMOPER -> minus", 54, 1));
+		rules.put(53, new GrammarRules("TERMOPER","TERMOPER -> add", 53, 1));
+		rules.put(54, new GrammarRules("TERMOPER","TERMOPER -> subtract", 54, 1));
 		rules.put(55, new GrammarRules("TERMOPER","TERMOPER -> concat", 55, 1));
 		rules.put(56, new GrammarRules("FACTEXPR","FACTEXPR -> FACTEXPR FACTOPER UNARYEXPR", 56, 3));
 		rules.put(57, new GrammarRules("FACTEXPR","FACTEXPR -> UNARYEXPR", 57, 1));
-		rules.put(58, new GrammarRules("FACTOPER","FACTOPER -> times", 58, 1));
+		rules.put(58, new GrammarRules("FACTOPER","FACTOPER -> multiply", 58, 1));
 		rules.put(59, new GrammarRules("FACTOPER","FACTOPER -> divide", 59, 1));
 		rules.put(60, new GrammarRules("FACTOPER","FACTOPER -> modulo", 60, 1));
 		rules.put(61, new GrammarRules("UNARYEXPR","UNARYEXPR -> UNARYOPER UNARYEXPR", 61, 2));
@@ -557,13 +557,13 @@ public class Parser {
 				return 38;
 			case "greaterThanOrEqual":
 				return 39;
-			case "plus":
+			case "add":
 				return 40;
-			case "minus":
+			case "subtract":
 				return 41;
 			case "concat":
 				return 42;
-			case "times":
+			case "multiply":
 				return 43;
 			case "divide":
 				return 44;
