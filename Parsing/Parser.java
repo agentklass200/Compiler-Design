@@ -142,21 +142,21 @@ public class Parser {
 						}
 						else if(state.getAction() == StateProp.REDUCE){
 							GrammarRules rule = getRules(state.getStateNum());
-							List<Token> tokenNodes = new ArrayList<Token>();
+							List<Token> tokenNodes = new ArrayList<Token>(); //ARRAYLIST OF CHILDREN
 							Stack<Token> tempStack = new Stack<Token>();
 							for(int i = 0; i < rule.getChildNo(); i++){
 								stateStack.pop();
 								tempStack.push(tokenStack.pop());
 							}
 							for(int i = 0; i < rule.getChildNo(); i++){
-								tokenNodes.add(tempStack.pop());
+								tokenNodes.add(tempStack.pop()); //ADD CHILD TO THE ARRAYLIST OF CHILDREN
 								tokenNodes.get(i).nodeOrder = i;
 							}
 							if(rule.getChildNo() == 0){
-								tokenStack.push(new TokenVariable(rule.getName()));
+								tokenStack.push(new TokenVariable(rule.getName())); //PUSH TOKENS WITHOUT CHILDREN
 							}
 							else{
-								tokenStack.push(new TokenVariable(rule.getName(), tokenNodes));
+								tokenStack.push(new TokenVariable(rule.getName(), tokenNodes)); //PUSH TOKENS WITH CHILDREN *Create a constructor with children parameter*
 							}
 							System.out.println(stepCounter++ + ". Reduce by Rule #"+ rule.getRuleNo() + ": " + rule.getInfo());
 //							System.out.println(tokenStack);

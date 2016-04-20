@@ -6,7 +6,7 @@ import Parsing.Parser;
 // Main Class
 public class Compiler {
 	public static void main(String[] args) throws IOException {
-		String fileName = "src/shortsample.txt";
+		String fileName = "src/error.txt";
 		Parser parse = new Parser(fileName);
 		if(parse.recoveryMode){
 			System.out.println();

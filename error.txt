@@ -3,7 +3,7 @@ INITIATE
 	INT _x = 4 + 10 * 20;
 	FLOAT _f;
 
-	REVEAL: "Hello World"
+	REVEAL: "Hello World";
 	*: No Delimiter :*
 	OBTAIN: _f;
 <<
