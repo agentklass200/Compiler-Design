@@ -17,7 +17,13 @@ public class Compiler {
 			System.out.println("Parsing Tree");
 			System.out.println("========================");
 			System.out.println(parse.getParsingTreeRoot().printTree());
+			System.out.println();
+			System.out.println("Post Traversal");
+			System.out.println("========================");
+			parse.getParsingTreeRoot().printPostTraversal();
 			
 		}
+		
+		
 	}
 }

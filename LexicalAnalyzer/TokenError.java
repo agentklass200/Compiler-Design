@@ -18,6 +18,7 @@ public class TokenError extends Token {
 		super.isError = true;
 		this.errorID = errorID;
 		this.identifierError = "";
+		this.val = this.key;
 	}
 	
 	public TokenError(String key, int errorID, int lineNo, int colNo, String indentifierError){
@@ -26,6 +27,7 @@ public class TokenError extends Token {
 		super.isError = true;
 		this.errorID = errorID;
 		this.identifierError = indentifierError;
+		this.val = this.key;
 	}
 	
 	public TokenError(String key, int errorID, int lineNo, int colNo, char c){
@@ -34,6 +36,7 @@ public class TokenError extends Token {
 		super.isError = true;
 		this.errorID = errorID;
 		this.identifierError = "" + c;
+		this.val = this.key;
 	}
 	
 	public String genErrorMessage(){

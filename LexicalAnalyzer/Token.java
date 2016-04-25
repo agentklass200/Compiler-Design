@@ -5,8 +5,10 @@ import java.util.List;
 
 public class Token {
 	protected String name;
-	protected String value;
-	protected String type;
+	public String value;
+	public String type;
+	public Object val;
+	public String other;
 	protected boolean isIgnored;
 	protected boolean isError;
 	public int colNo;
@@ -15,7 +17,14 @@ public class Token {
 	protected List<Token> children;
 	public boolean isNonTerminal;
 	public int nodeOrder;
-	protected int noOfChild;
+	public int dataType;
+	
+	public static final int STRING = 0;
+	public static final int DOUBLE = 1;
+	public static final int INTEGER = 2;
+	public static final int CHARACTER = 3;
+	public static final int FLOAT = 4;
+	public static final int BOOLEAN = 5;
 	
 	public Token(String name, String value, String type, int lineNo, int colNo){
 		this.name = name;
@@ -58,6 +67,13 @@ public class Token {
         this.isNonTerminal = false;
 	}
 	
+	public int noOfChild(){
+		if(children != null){
+			return children.size();
+		}
+		return 0;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -80,23 +96,30 @@ public class Token {
 	}
     
     public String printTree(){
-    	if(this.noOfChild == 0){
-			return "("+ this.getName() +")";
-//			return "["+ this.getName() +"]";
+    	if(this.noOfChild() == 0){
+//			return "("+ this.getName() +")";
+			return "["+ this.getName() +"]";
 		}
 		else{
-			return "("+ this.getName() + printChild() + ")";
-//			return "["+ this.getName() + printChild() + "]";
+//			return "("+ this.getName() + printChild() + ")";
+			return "["+ this.getName() + printChild() + "]";
 		}
     }
     
-    public String printChild(){
+    private String printChild(){
 		String s = new String();
 		for(int i = 0; i < children.size(); i++){
 			s = s + children.get(i).printTree();
 		}
 		return s;
 	}
+    
+    public void printPostTraversal(){
+    	for(int i = 0; i < this.noOfChild(); i++){
+    		this.getChildren().get(i).printPostTraversal();
+    	}
+    	System.out.print("| " + this.name + " |");
+    }
     
 //    public void growNode(){
 //    	int oldNodeOrder = this.nodeOrder;
@@ -174,14 +197,6 @@ public class Token {
 		this.children = children;
 	}
 
-	public int getNoOfChild() {
-		return noOfChild;
-	}
-
-	public void setNoOfChild(int noOfChild) {
-		this.noOfChild = noOfChild;
-	}
-        
 	
 	
 	

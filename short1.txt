@@ -2,6 +2,7 @@ INITIATE
 >>
 	INT _x = 4 + 10 * 20 - 30;
 	FLOAT _f;
+	CHAR _c = 'a';
 
 	REVEAL: "Hello World";
 	OBTAIN: _f;

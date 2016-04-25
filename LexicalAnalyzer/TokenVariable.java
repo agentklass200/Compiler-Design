@@ -10,15 +10,13 @@ public class TokenVariable extends Token {
 	public TokenVariable(String name){
 		super(name, 0, 0);
 		this.children = null;
-		this.noOfChild = 0;
 		this.isNonTerminal = true;
 	}
 	
 	public TokenVariable(String name,List<Token> children){
 		super(name, 0, 0);
 		this.children = children;
-		this.noOfChild = children.size();
-		for(int i = 0; i < noOfChild; i++){
+		for(int i = 0; i < this.noOfChild(); i++){
 			children.get(i).setParent(this);
 		}
 		this.isNonTerminal = true;
@@ -46,12 +44,4 @@ public class TokenVariable extends Token {
 		this.children = children;
 	}
 
-	public int getNoOfChild() {
-		return noOfChild;
-	}
-
-	public void setNoOfChild(int noOfChild) {
-		this.noOfChild = noOfChild;
-	}
-	
 }
