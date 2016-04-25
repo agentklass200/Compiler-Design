@@ -7,7 +7,7 @@ public class Token {
 	protected String name;
 	public String value;
 	public String type;
-	public Object val;
+	public Object val = null;
 	public String other;
 	protected boolean isIgnored;
 	protected boolean isError;
@@ -17,7 +17,10 @@ public class Token {
 	protected List<Token> children;
 	public boolean isNonTerminal;
 	public int nodeOrder;
-	public int dataType;
+	public int dataType = -1;
+	public int ruleNo = 0;
+	private String key;
+	public boolean isIdentifier = false;
 	
 	public static final int STRING = 0;
 	public static final int DOUBLE = 1;
@@ -195,6 +198,15 @@ public class Token {
 
 	public void setChildren(List<Token> children) {
 		this.children = children;
+	}
+	
+	
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	

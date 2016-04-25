@@ -157,6 +157,7 @@ public class Parser {
 							}
 							else{
 								tokenStack.push(new TokenVariable(rule.getName(), tokenNodes)); //PUSH TOKENS WITH CHILDREN *Create a constructor with children parameter*
+								tokenStack.peek().ruleNo = rule.getRuleNo();
 							}
 							System.out.println(stepCounter++ + ". Reduce by Rule #"+ rule.getRuleNo() + ": " + rule.getInfo());
 //							System.out.println(tokenStack);
@@ -220,74 +221,67 @@ public class Parser {
 	}
 	
 	
-	public void SyntaxDirectedTranslate(GrammarRules rule, List<Token> children){
-		Token newToken = new TokenVariable(rule.getName());
-		switch(rule.getRuleNo()){
-			case 78:
-				newToken.val = false;
-				newToken.dataType = Token.BOOLEAN;
-				break;
-			case 77:
-				newToken.val = true;
-				newToken.dataType = Token.BOOLEAN;
-				break;
-			case 76:
-				newToken.val = Integer.parseInt(children.get(0).value);
-				newToken.dataType = Token.INTEGER;
-				break;
-			case 75:
-				newToken.val = Float.parseFloat(children.get(0).value);
-				newToken.dataType = Token.FLOAT;
-				break;
-			case 74:
-				newToken.val = children.get(0).value;
-				newToken.dataType = children.get(0).dataType;
-				break;
-			case 73:
-				newToken.val = getCharVal(children.get(0).value);
-				newToken.dataType = Token.CHARACTER;
-				break;
-			case 72:
-				newToken.val = getStringVal(children.get(0).value);
-				newToken.dataType = Token.STRING;
-				break;
-			case 71:
-				newToken.val = children.get(1).value;
-				newToken.dataType = children.get(1).dataType;
-				break;
-			case 70:
-				newToken.val = children.get(0).value;
-				newToken.dataType = children.get(0).dataType;
-				break;
-			case 69:
-				newToken.val = children.get(0).val;
-				newToken.dataType = children.get(0).dataType;
-				break;
-			case 68:
-				newToken.other = children.get(0).getName();
-				break;
-			case 67:
-				newToken.other = children.get(0).getName();
-				break;
-			case 66:
-				newToken.val = children.get(0).val;
-				newToken.dataType = children.get(0).dataType;
-				break;
-			case 65:
-				
-			default:
-				
-		}
-	}
+//	public void SyntaxDirectedTranslate(GrammarRules rule, List<Token> children){
+//		Token newToken = new TokenVariable(rule.getName());
+//		switch(rule.getRuleNo()){
+//			case 78:
+//				newToken.val = false;
+//				newToken.dataType = Token.BOOLEAN;
+//				break;
+//			case 77:
+//				newToken.val = true;
+//				newToken.dataType = Token.BOOLEAN;
+//				break;
+//			case 76:
+//				newToken.val = Integer.parseInt(children.get(0).value);
+//				newToken.dataType = Token.INTEGER;
+//				break;
+//			case 75:
+//				newToken.val = Float.parseFloat(children.get(0).value);
+//				newToken.dataType = Token.FLOAT;
+//				break;
+//			case 74:
+//				newToken.val = children.get(0).value;
+//				newToken.dataType = children.get(0).dataType;
+//				break;
+//			case 73:
+//				newToken.val = getCharVal(children.get(0).value);
+//				newToken.dataType = Token.CHARACTER;
+//				break;
+//			case 72:
+//				newToken.val = getStringVal(children.get(0).value);
+//				newToken.dataType = Token.STRING;
+//				break;
+//			case 71:
+//				newToken.val = children.get(1).value;
+//				newToken.dataType = children.get(1).dataType;
+//				break;
+//			case 70:
+//				newToken.val = children.get(0).value;
+//				newToken.dataType = children.get(0).dataType;
+//				break;
+//			case 69:
+//				newToken.val = children.get(0).val;
+//				newToken.dataType = children.get(0).dataType;
+//				break;
+//			case 68:
+//				newToken.other = children.get(0).getName();
+//				break;
+//			case 67:
+//				newToken.other = children.get(0).getName();
+//				break;
+//			case 66:
+//				newToken.val = children.get(0).val;
+//				newToken.dataType = children.get(0).dataType;
+//				break;
+//			case 65:
+//				
+//			default:
+//				
+//		}
+//	}
+//	
 	
-	public String getStringVal(String s){
-		return s.substring(1, s.length());
-	}
-	
-	public char getCharVal(String s){
-		char[] cA = s.toCharArray();
-		return cA[1];
-	}
 
 
 	public HashMap<String, Token> getIdMaps() {

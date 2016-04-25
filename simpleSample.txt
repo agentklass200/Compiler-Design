@@ -1,0 +1,6 @@
+INITIATE
+>>
+	FLOAT _f = 1 + 2 / 2 + 5;
+	REVEAL: _f;
+<<
+TERMINATE
