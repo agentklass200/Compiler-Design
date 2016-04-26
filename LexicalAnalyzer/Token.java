@@ -19,11 +19,10 @@ public class Token {
 	public int nodeOrder;
 	public int dataType = -1;
 	public int ruleNo = 0;
-	private String key;
+	private String key = "";
 	public boolean isIdentifier = false;
 	
 	public static final int STRING = 0;
-	public static final int DOUBLE = 1;
 	public static final int INTEGER = 2;
 	public static final int CHARACTER = 3;
 	public static final int FLOAT = 4;

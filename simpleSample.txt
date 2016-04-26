@@ -1,6 +1,8 @@
 INITIATE
 >>
-	FLOAT _f = 1 + 2 / 2 + 5;
-	REVEAL: _f;
+	INT _f = 1 + 2 + 2 + 5;
+	FLOAT _x;
+	_x = 10 + 0.5;
+	REVEAL: _f + " " + ( 1 + 2 + 3) + 'x' + " hello " + _x;
 <<
 TERMINATE
