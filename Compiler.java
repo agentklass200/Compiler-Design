@@ -1,13 +1,17 @@
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import Parsing.Parser;
 import LexicalAnalyzer.*;
+import java.util.*;
 
 
 // Main Class
 public class Compiler {
 	static Parser parse = null;
 	static boolean isError = false;
+	static boolean pass = false;
+	static boolean loop = false;
 	public static void main(String[] args) throws IOException {
 		String fileName = "src/simpleSample.txt";
 		parse = new Parser(fileName);
@@ -30,8 +34,65 @@ public class Compiler {
 	}
 	
 	public static void  evaluateTree(Token node, Parser parse){
-		for(int i = 0; i < node.noOfChild(); i++){
-			evaluateTree(node.getChildren().get(i), parse);
+
+		if(!isError){
+			switch(node.ruleNo){
+				case 20: //CONDITIONAL
+					evaluateTree(node.getChildren().get(2), parse); //EVALUATE EXPR
+					if((boolean)node.getChildren().get(2).val){
+						evaluateTree(node.getChildren().get(3), parse); //SCOPE
+					}
+					else{
+						evaluateTree(node.getChildren().get(4), parse); //ELSESTMT
+					}
+					pass = true;
+					break;
+				case 21:
+					evaluateTree(node.getChildren().get(2), parse); //EVALUATE EXPR
+					if((boolean)node.getChildren().get(2).val){
+						evaluateTree(node.getChildren().get(3), parse); //SCOPE
+					}
+					else{
+						evaluateTree(node.getChildren().get(4), parse); //ELSESTMT
+					}
+					pass = true;
+					break;
+				case 22:
+					evaluateTree(node.getChildren().get(1), parse); //SCOPE
+					pass = true;
+					break;
+				case 28:
+					evaluateTree(node.getChildren().get(2), parse); //EVALUATE EXPR
+					if((boolean)node.getChildren().get(2).val){
+						evaluateTree(node.getChildren().get(3), parse); //SCOPE
+						evaluateTree(node, parse); //Loop
+					}
+					pass = true;
+					break;
+				case 29:
+					if(!loop){
+						evaluateTree(node.getChildren().get(2), parse); //EVALUATE ASSIGNMENT
+					}
+					evaluateTree(node.getChildren().get(4), parse); // CONDITION
+					if((boolean)node.getChildren().get(4).val){
+						evaluateTree(node.getChildren().get(7), parse); //SCOPE
+						evaluateTree(node.getChildren().get(6), parse); //SCOPE
+						loop = true;
+						evaluateTree(node, parse); //Loop
+					}
+					loop = false;
+					pass = true;
+					break;
+					
+			}
+		}
+		if(!pass){
+			for(int i = 0; i < node.noOfChild(); i++){
+				evaluateTree(node.getChildren().get(i), parse);	
+			}
+		}
+		else{
+			pass = false;
 		}
 		
 //		System.out.println(node.ruleNo + " - " + node.getName());
@@ -71,7 +132,7 @@ public class Compiler {
 				case 36:
 					switch(node.getChildren().get(0).dataType){
 					case Token.INTEGER:
-						node.val = Math.round((float)node.getChildren().get(0).val);
+						node.val = Float.parseFloat(node.getChildren().get(0).val.toString());
 						break;
 					case Token.BOOLEAN:
 						node.val = (boolean)node.getChildren().get(0).val;
@@ -80,7 +141,7 @@ public class Compiler {
 						node.val = (char)node.getChildren().get(0).val;
 						break;
 					case Token.FLOAT:
-						node.val = (float)node.getChildren().get(0).val;
+						node.val = Float.parseFloat(node.getChildren().get(0).val.toString());
 						break;
 					case Token.STRING:
 						node.val = node.getChildren().get(0).val.toString();
@@ -146,7 +207,7 @@ public class Compiler {
 							if(node.getChildren().get(0).isIdentifier){
 								if(node.getChildren().get(0).dataType == Token.INTEGER){
 									node.val = parse.getIdMaps().get(node.getChildren().get(0).getKey()).val;
-									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = (float)parse.getIdMaps().get(node.getChildren().get(0).getKey()).val +  1;
+									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = Float.parseFloat(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString()) +  1;
 									node.dataType = node.getChildren().get(0).dataType;
 								}
 								else if(node.getChildren().get(0).dataType == Token.FLOAT){
@@ -418,13 +479,11 @@ public class Compiler {
 					}
 					break;
 				case 16:
-					System.out.println(node.getChildren().get(2).val);
+					System.out.print(node.getChildren().get(2).val);
 					break;
 				case 30:
 					if(parse.getIdMaps().get(node.getChildren().get(0).getKey()).dataType == -1){
 						parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = node.getChildren().get(2).val;
-//						parse.getIdMaps().get(node.getChildren().get(0).getKey()).dataType = node.getChildren().get(2).dataType;
-//						System.out.println(parse.getIdMaps().get(node.getChildren().get(0).getKey()).dataType);
 						node.dataType = node.getChildren().get(2).dataType;
 						node.setKey(node.getChildren().get(0).getKey());
 					}
@@ -443,43 +502,51 @@ public class Compiler {
 					node.setKey(node.getChildren().get(0).getKey());
 					break;
 				case 26:
-					if(node.getChildren().get(1).ruleNo == 24){
-						
-						if(node.dataType != node.getChildren().get(1).dataType){
-							if(node.dataType == Token.STRING || node.dataType == Token.CHARACTER){
-								System.out.println(node.dataType);
-								parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.dataType;
-								node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
+					if(node.dataType != -1){
+						if(node.getChildren().get(1).ruleNo == 24){
+							if(node.dataType != node.getChildren().get(1).dataType){
+								if(node.dataType == Token.STRING || node.dataType == Token.CHARACTER){
+									parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType = node.dataType;
+									node.getChildren().get(1).getChildren().get(1).dataType = node.dataType;
+									evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
+								}
+								else if(node.dataType == Token.FLOAT && node.dataType == Token.INTEGER){
+									parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.dataType;
+									node.getChildren().get(1).getChildren().get(1).dataType = node.dataType;
+									evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
+								}
+								else{
+									System.out.println("ERROR! The declared id value is type mismatched.");
+									isError = true;
+								}
+								
 							}
 							else{
-								System.out.println("ERROR! The declared id value is type mismatched.");
-								isError = true;
+								parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.dataType;
+								node.getChildren().get(1).getChildren().get(1).dataType = node.dataType;
+								evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
 							}
-							
 						}
 						else{
-							System.out.println(node.dataType);
-							parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.dataType;
-							node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
+							parse.getIdMaps().get(node.getChildren().get(1).getChildren().get(0).getKey()).dataType = node.dataType;
+							node.getChildren().get(1).getChildren().get(1).dataType = node.dataType;
+							evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
+							
 						}
-					}
-					else{
-						parse.getIdMaps().get(node.getChildren().get(1).getChildren().get(0).getKey()).dataType = node.dataType;
-						node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
 					}
 					break;
 				case 12:
 					if(node.getChildren().get(1).ruleNo == 24){
-						
 						if(node.getChildren().get(0).dataType != node.getChildren().get(1).dataType){
 							if(node.getChildren().get(0).dataType == Token.STRING || node.getChildren().get(0).dataType == Token.CHARACTER){
 								parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.getChildren().get(0).dataType;
 								node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
+								evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
 							}
-							else if(node.getChildren().get(0).dataType == Token.INTEGER){//LOL
-								parse.getIdMaps().get(node.getChildren().get(1).getKey()).val =  Math.round((float)parse.getIdMaps().get(node.getChildren().get(1).getKey()).val) ;
+							else if(node.getChildren().get(0).dataType == Token.FLOAT && node.getChildren().get(1).dataType == Token.INTEGER){
 								parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.getChildren().get(0).dataType;
 								node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
+								evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
 							}
 							else{
 								System.out.println("ERROR! The declared id value is type mismatched.");
@@ -488,14 +555,15 @@ public class Compiler {
 							
 						}
 						else{
-							
 							parse.getIdMaps().get(node.getChildren().get(1).getKey()).dataType =  node.getChildren().get(0).dataType;
 							node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
+							evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
 						}
 					}
 					else{
 						parse.getIdMaps().get(node.getChildren().get(1).getChildren().get(0).getKey()).dataType = node.getChildren().get(0).dataType;
 						node.getChildren().get(1).getChildren().get(1).dataType = node.getChildren().get(0).dataType;
+						evaluateTree(node.getChildren().get(1).getChildren().get(1), parse);
 						
 					}
 					break;
@@ -506,6 +574,44 @@ public class Compiler {
 				case 35:
 					node.dataType = convertDT(node.getChildren().get(0).getName());
 					break;
+				case 15:
+					Scanner scan = new Scanner(System.in);
+					Object o = scan.nextLine();
+					
+					if(parse.getIdMaps().get(node.getChildren().get(2).getKey()).dataType != -1){
+						switch(parse.getIdMaps().get(node.getChildren().get(2).getKey()).dataType){
+						case Token.INTEGER:
+							if(isNumeric(o.toString())){
+								parse.getIdMaps().get(node.getChildren().get(2).getKey()).val = Integer.parseInt(o.toString());
+							}
+							else{
+								System.out.println("ERROR! the input is non-numeric!");
+							}
+							break;
+						case Token.FLOAT:
+							if(isNumeric(o.toString())){
+								parse.getIdMaps().get(node.getChildren().get(2).getKey()).val = Float.parseFloat(o.toString());
+							}
+							else{
+								System.out.println("ERROR! the input is non-numeric!");
+							}
+							break;
+						case Token.STRING:
+							parse.getIdMaps().get(node.getChildren().get(2).getKey()).val = o.toString();
+							break;
+						default:
+							System.out.println("ERROR! Invalid datatype for input.");
+						}
+						
+					}
+					else{
+						System.out.println("ERROR! the identifier is not yet defined!");
+						isError = true;
+					}
+					break;
+				case 19:
+					parse.getIdMaps().get(node.getChildren().get(0).getKey()).dataType = convertDT(node.getChildren().get(2).getName());
+					break;
 				default:
 				
 			}
@@ -514,6 +620,10 @@ public class Compiler {
 	
 	public static boolean isDataTypeSame(Token t1, Token t2){
 		return t1.dataType == t2.dataType;
+	}
+	public static boolean isNumeric(String str)
+	{
+	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
 	}
 	
 	public static int getGreaterDataType(Token t1, Token t2){
