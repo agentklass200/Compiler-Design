@@ -20,9 +20,10 @@ Angelo Magsino
 
 INITIATE
 >>
+	INT _x;
  	LAPSE: _x = 0 & _x < 10 & _x++
  	>>
- 		REVEAL: "Hello World -" + 1;
+ 		REVEAL: "Hello World -" + 1 + "\n";
  	<<
 <<
 TERMINATE

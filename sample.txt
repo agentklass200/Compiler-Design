@@ -29,6 +29,9 @@ INITIATE
 	REVEAL: " \nInput value of x: "; *: HINDI NA KASAMA SA DERIVATION :*
 	*: SCANF STAGE :*
 	OBTAIN: _x;
+	
+	REVEAL: "The value of x now is: " + _x;
+	REVEAL: "\n";
 
 	*: SAMPLE IF STATEMENT :*
 	IF: _x ~= 20 || _i == 2 && ~_b
@@ -59,8 +62,9 @@ INITIATE
 	<<
 
 	REVEAL: "The value of x now is: " + _x;
+	REVEAL: "\n";
 	REVEAL: "The value of i now is: " + _i;
-	_j TRANSFORMTO STR;
+	REVEAL: "\n";
 	REVEAL: _j;
 
 	*:SAMPLE WHILE LOOP:*

@@ -1,9 +1,0 @@
-INITIATE
->>
-	INT _i, _f;
-	LAPSE: _i = 0 & _i < 100 & _i++
-	>>
-		REVEAL: _i + "\n";
-	<<
-<<
-TERMINATE

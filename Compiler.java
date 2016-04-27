@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import Parsing.Parser;
 import LexicalAnalyzer.*;
@@ -13,7 +12,7 @@ public class Compiler {
 	static boolean pass = false;
 	static boolean loop = false;
 	public static void main(String[] args) throws IOException {
-		String fileName = "src/simpleSample.txt";
+		String fileName = "src/semanticSample.txt";
 		parse = new Parser(fileName);
 		if(parse.recoveryMode){
 			System.out.println();
@@ -39,21 +38,33 @@ public class Compiler {
 			switch(node.ruleNo){
 				case 20: //CONDITIONAL
 					evaluateTree(node.getChildren().get(2), parse); //EVALUATE EXPR
-					if((boolean)node.getChildren().get(2).val){
-						evaluateTree(node.getChildren().get(3), parse); //SCOPE
+					if(node.getChildren().get(2).dataType == Token.BOOLEAN){
+						if((boolean)node.getChildren().get(2).val){
+							evaluateTree(node.getChildren().get(3), parse); //SCOPE
+						}
+						else{
+							evaluateTree(node.getChildren().get(4), parse); //ELSESTMT
+						}
 					}
 					else{
-						evaluateTree(node.getChildren().get(4), parse); //ELSESTMT
+						System.out.println("ERROR! The following expression is not boolean.");
+						isError = true;
 					}
 					pass = true;
 					break;
 				case 21:
 					evaluateTree(node.getChildren().get(2), parse); //EVALUATE EXPR
-					if((boolean)node.getChildren().get(2).val){
-						evaluateTree(node.getChildren().get(3), parse); //SCOPE
+					if(node.getChildren().get(2).dataType == Token.BOOLEAN){
+						if((boolean)node.getChildren().get(2).val){
+							evaluateTree(node.getChildren().get(3), parse); //SCOPE
+						}
+						else{
+							evaluateTree(node.getChildren().get(4), parse); //ELSESTMT
+						}
 					}
 					else{
-						evaluateTree(node.getChildren().get(4), parse); //ELSESTMT
+						System.out.println("ERROR! The following expression is not boolean.");
+						isError = true;
 					}
 					pass = true;
 					break;
@@ -63,10 +74,17 @@ public class Compiler {
 					break;
 				case 28:
 					evaluateTree(node.getChildren().get(2), parse); //EVALUATE EXPR
-					if((boolean)node.getChildren().get(2).val){
-						evaluateTree(node.getChildren().get(3), parse); //SCOPE
-						evaluateTree(node, parse); //Loop
+					if(node.getChildren().get(2).dataType == Token.BOOLEAN){
+						if((boolean)node.getChildren().get(2).val){
+							evaluateTree(node.getChildren().get(3), parse); //SCOPE
+							evaluateTree(node, parse); //Loop
+						}
 					}
+					else{
+						System.out.println("ERROR! The following expression is not boolean.");
+						isError = true;
+					}
+					
 					pass = true;
 					break;
 				case 29:
@@ -108,7 +126,7 @@ public class Compiler {
 					node.dataType = Token.BOOLEAN;
 					break;
 				case 76:
-					node.val = Float.parseFloat(node.getChildren().get(0).value);
+					node.val = new Float(node.getChildren().get(0).value.toString()).intValue();
 					node.dataType = Token.INTEGER;
 					break;
 				case 75:
@@ -132,7 +150,7 @@ public class Compiler {
 				case 36:
 					switch(node.getChildren().get(0).dataType){
 					case Token.INTEGER:
-						node.val = Float.parseFloat(node.getChildren().get(0).val.toString());
+						node.val = new Float(node.getChildren().get(0).val.toString()).intValue();
 						break;
 					case Token.BOOLEAN:
 						node.val = (boolean)node.getChildren().get(0).val;
@@ -171,7 +189,7 @@ public class Compiler {
 					}
 					else{
 						if(parse.getIdMaps().get(node.getChildren().get(0).getKey()).dataType == Token.INTEGER){
-							node.val = Float.parseFloat(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString());
+							node.val = new Float(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString()).intValue();
 						}
 						else{
 							node.val = parse.getIdMaps().get(node.getChildren().get(0).getKey()).val;
@@ -208,6 +226,7 @@ public class Compiler {
 								if(node.getChildren().get(0).dataType == Token.INTEGER){
 									node.val = parse.getIdMaps().get(node.getChildren().get(0).getKey()).val;
 									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = Float.parseFloat(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString()) +  1;
+									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = new Float(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString()).intValue();
 									node.dataType = node.getChildren().get(0).dataType;
 								}
 								else if(node.getChildren().get(0).dataType == Token.FLOAT){
@@ -221,7 +240,8 @@ public class Compiler {
 							if(node.getChildren().get(0).isIdentifier){
 								if(node.getChildren().get(0).dataType == Token.INTEGER){
 									node.val = parse.getIdMaps().get(node.getChildren().get(0).getKey()).val;
-									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = (float)parse.getIdMaps().get(node.getChildren().get(0).getKey()).val -  1;
+									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = Float.parseFloat(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString()) -  1;
+									parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = new Float(parse.getIdMaps().get(node.getChildren().get(0).getKey()).val.toString()).intValue();
 									node.dataType = node.getChildren().get(0).dataType;
 								}
 								else if(node.getChildren().get(0).dataType == Token.FLOAT){
@@ -241,7 +261,8 @@ public class Compiler {
 					switch(node.getChildren().get(0).other){
 						case "negative":
 							if(node.getChildren().get(1).dataType == Token.INTEGER){
-								node.val = -(int)node.getChildren().get(1).val;
+								node.val = -Float.parseFloat(node.getChildren().get(1).val.toString());
+								node.val = (int)node.val;
 								node.dataType = node.getChildren().get(1).dataType;
 							}
 							else if(node.getChildren().get(1).dataType == Token.FLOAT){
@@ -249,7 +270,7 @@ public class Compiler {
 								node.dataType = node.getChildren().get(1).dataType;
 							}
 							else{
-								System.out.println("ERROR! The type is not a number type.");
+								System.out.println("ERROR! the value is a non-numeric type.");
 								isError = true;
 							}
 							break;
@@ -261,9 +282,10 @@ public class Compiler {
 							else{
 								System.out.println("ERROR! The type is not a boolean type.");
 							}
+							break;
 						default:
 							System.out.println("ERROR! Invalid operator");
-							System.out.println(node.ruleNo);
+							System.out.println(node.ruleNo + " " + node.getChildren().get(0).other);
 							
 					}
 					break;
@@ -273,11 +295,14 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) * (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) * Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = getGreaterDataType(node.getChildren().get(0), node.getChildren().get(2));
+							if(node.getChildren().get(0).dataType == Token.INTEGER && node.getChildren().get(2).dataType == Token.INTEGER){
+								node.val = new Float(node.val.toString()).intValue();
+							}
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -285,11 +310,11 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) / (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) / Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.FLOAT;
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -297,13 +322,15 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) % (float)getVal(node.getChildren().get(2));
-							node.dataType = getGreaterDataType(node.getChildren().get(0), node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) % Float.parseFloat(getVal(node.getChildren().get(2)).toString());
+							node.dataType = Token.INTEGER;
+							node.val = new Float(node.val.toString()).intValue();
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
+						break;
 					default:
 						System.out.println("ERROR! Invalid operator");
 						System.out.println(node.ruleNo + " " + node.getChildren().get(1).other);
@@ -316,8 +343,11 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) + (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) + Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = getGreaterDataType(node.getChildren().get(0), node.getChildren().get(2));
+							if(node.getChildren().get(0).dataType == Token.INTEGER && node.getChildren().get(2).dataType == Token.INTEGER){
+								node.val = new Float(node.val.toString()).intValue();
+							}
 						}
 						else if((node.getChildren().get(0).dataType == Token.STRING || node.getChildren().get(0).dataType == Token.CHARACTER) || (node.getChildren().get(2).dataType == Token.STRING ||  node.getChildren().get(2).dataType == Token.CHARACTER)){
 							node.val = getVal(node.getChildren().get(0)).toString() + getVal(node.getChildren().get(2)).toString();
@@ -332,11 +362,14 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) - (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) - Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = getGreaterDataType(node.getChildren().get(0), node.getChildren().get(2));
+							if(node.getChildren().get(0).dataType == Token.INTEGER && node.getChildren().get(2).dataType == Token.INTEGER){
+								node.val = new Float(node.val.toString()).intValue();
+							}
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -362,11 +395,11 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) < (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) < Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.BOOLEAN;
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -374,11 +407,11 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) <= (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) <= Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.BOOLEAN;
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -386,11 +419,11 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) < (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) > Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.BOOLEAN;
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -398,11 +431,11 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) <= (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) >= Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.BOOLEAN;
 						}
 						else{
-							System.out.println("ERROR! The type is not a number type.");
+							System.out.println("ERROR! the value is a non-numeric type.");
 							isError = true;
 						}
 						break;
@@ -418,7 +451,7 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) == (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) == Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.BOOLEAN;
 						}
 						else if((node.getChildren().get(0).dataType == Token.STRING) || (node.getChildren().get(2).dataType == Token.STRING)){
@@ -434,7 +467,7 @@ public class Compiler {
 						if((node.getChildren().get(0).dataType == Token.INTEGER || node.getChildren().get(0).dataType == Token.FLOAT)
 								&& (node.getChildren().get(2).dataType == Token.INTEGER || node.getChildren().get(2).dataType == Token.FLOAT)
 								){
-							node.val = (float)getVal(node.getChildren().get(0)) != (float)getVal(node.getChildren().get(2));
+							node.val = Float.parseFloat(getVal(node.getChildren().get(0)).toString()) != Float.parseFloat(getVal(node.getChildren().get(2)).toString());
 							node.dataType = Token.BOOLEAN;
 						}
 						else if((node.getChildren().get(0).dataType == Token.STRING) || (node.getChildren().get(2).dataType == Token.STRING)){
@@ -490,6 +523,9 @@ public class Compiler {
 					else{
 						if(isDataTypeSame(parse.getIdMaps().get(node.getChildren().get(0).getKey()), node.getChildren().get(2) )){
 							parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = node.getChildren().get(2).val;
+						}
+						else if(parse.getIdMaps().get(node.getChildren().get(0).getKey()).dataType == Token.FLOAT && node.getChildren().get(2).dataType == Token.INTEGER){
+							parse.getIdMaps().get(node.getChildren().get(0).getKey()).val = new Float(node.getChildren().get(2).val.toString());
 						}
 						else{
 							System.out.println("ERROR: Type Mismatched!");
@@ -619,6 +655,7 @@ public class Compiler {
 	}
 	
 	public static boolean isDataTypeSame(Token t1, Token t2){
+
 		return t1.dataType == t2.dataType;
 	}
 	public static boolean isNumeric(String str)

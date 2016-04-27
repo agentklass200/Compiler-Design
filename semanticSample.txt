@@ -1,0 +1,38 @@
+INITIATE
+>>
+	INT _i, _f = 1;
+	STR _s = "Hello!";
+	LAPSE: _i = 0 & _i <= 10 & _i++
+	>>
+		IF: _i == 7
+		>>
+			REVEAL: "It's me! \n";
+		<<
+		ELSEIF: _i == 5
+		>>
+			REVEAL: _s + "\n";
+		<<
+		ELSE
+		>>
+			IF: _i ~= 3
+			>>
+				REVEAL: _i + "\n";
+			<<
+			ENDIF
+		<<
+		ENDIF
+	<<
+	REVEAL: "\n";
+	*:Print 1 to 100:*
+	WHILE: _f <= 100
+	>>
+		REVEAL: _f + " ";
+		IF: _f%10 == 0
+		>>
+			REVEAL: "\n";
+		<<
+		ENDIF
+		_f++;
+	<<
+<<
+TERMINATE
