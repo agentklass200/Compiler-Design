@@ -12,7 +12,7 @@ public class Compiler {
 	static boolean pass = false;
 	static boolean loop = false;
 	public static void main(String[] args) throws IOException {
-		String fileName = "src/semanticSample.txt";
+		String fileName = "src/shortsample.txt";
 		parse = new Parser(fileName);
 		if(parse.recoveryMode){
 			System.out.println();
@@ -94,7 +94,7 @@ public class Compiler {
 					evaluateTree(node.getChildren().get(4), parse); // CONDITION
 					if((boolean)node.getChildren().get(4).val){
 						evaluateTree(node.getChildren().get(7), parse); //SCOPE
-						evaluateTree(node.getChildren().get(6), parse); //SCOPE
+						evaluateTree(node.getChildren().get(6), parse); //ASSIGNMENT
 						loop = true;
 						evaluateTree(node, parse); //Loop
 					}
